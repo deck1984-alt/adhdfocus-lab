@@ -24,56 +24,19 @@
             padding: 10px; 
             touch-action: manipulation; 
         }
-        
-        #status-bar { 
-            display: flex; 
-            justify-content: space-around; 
-            width: 100%; 
-            max-width: 400px; 
-            margin-bottom: 10px; 
-            font-family: monospace; 
-            font-size: 18px; 
-        }
+        #status-bar { display: flex; justify-content: space-around; width: 100%; max-width: 400px; margin-bottom: 10px; font-family: monospace; font-size: 18px; }
         .stat-value { color: var(--accent); font-weight: bold; }
-
-        #grid { 
-            display: none; 
-            grid-template-columns: repeat(9, var(--cell-size)); 
-            grid-template-rows: repeat(9, var(--cell-size)); 
-            border: var(--border-thick) solid #fff; 
-            background: #fff; 
-        }
-        .cell { 
-            width: var(--cell-size); 
-            height: var(--cell-size); 
-            background: var(--cell-bg); 
-            border: 1px solid #444; 
-            display: flex; 
-            align-items: center; 
-            justify-content: center; 
-            font-size: calc(var(--cell-size) * 0.5); 
-            cursor: pointer; 
-            box-sizing: border-box; 
-            position: relative; 
-        }
+        #grid { display: none; grid-template-columns: repeat(9, var(--cell-size)); grid-template-rows: repeat(9, var(--cell-size)); border: var(--border-thick) solid #fff; background: #fff; }
+        .cell { width: var(--cell-size); height: var(--cell-size); background: var(--cell-bg); border: 1px solid #444; display: flex; align-items: center; justify-content: center; font-size: calc(var(--cell-size) * 0.5); cursor: pointer; box-sizing: border-box; position: relative; }
         .cell:nth-child(3n) { border-right: var(--border-thick) solid #fff; }
         .cell:nth-child(9n) { border-right: none; }
         .cell:nth-child(n+19):nth-child(-n+27), .cell:nth-child(n+46):nth-child(-n+54) { border-bottom: var(--border-thick) solid #fff; }
-        
         .cell.fixed { color: #fff; font-weight: bold; background: #2a2a2a; }
         .cell.user { color: var(--accent); }
         .cell.error { background: #4d1e1e; animation: shake 0.2s; }
         .cell.selected { background: #333; outline: 2px solid var(--accent); z-index: 5; }
-
-        .pencil-marks { 
-            display: grid; 
-            grid-template-columns: repeat(3, 1fr); 
-            width: 100%; height: 100%; 
-            font-size: 10px; line-height: 10px; color: #aaa; 
-            pointer-events: none; position: absolute;
-        }
+        .pencil-marks { display: grid; grid-template-columns: repeat(3, 1fr); width: 100%; height: 100%; font-size: 10px; line-height: 10px; color: #aaa; pointer-events: none; position: absolute; }
         .pencil-mark { display: flex; align-items: center; justify-content: center; }
-
         #controls { display: none; width: 100%; max-width: 400px; margin-top: 15px; }
         #numpad { display: grid; grid-template-columns: repeat(5, 1fr); gap: 5px; margin-bottom: 10px; }
         .num-btn { background: #333; color: #fff; border: 1px solid #555; padding: 15px 0; font-size: 20px; border-radius: 5px; text-align: center; }
@@ -81,11 +44,9 @@
         .mode-btn { width: 100%; padding: 12px; background: #444; border: none; color: #fff; border-radius: 5px; font-weight: bold; margin-top: 5px; font-size: 14px; }
         .mode-btn.active { background: #ff9800; }
         .btn-auto { background: var(--success); }
-
         #setup { width: 90%; max-width: 500px; text-align: center; margin-top: 20px; }
         textarea { width: 100%; height: 120px; background: #222; color: #0f0; border: 1px solid #444; padding: 10px; box-sizing: border-box; font-family: monospace; }
         .start-btn { width: 100%; padding: 15px; margin-top: 10px; background: var(--accent); color: #fff; border: none; font-size: 18px; font-weight: bold; }
-
         @keyframes shake { 0%, 100% {transform: translateX(0);} 25% {transform: translateX(-5px);} 75% {transform: translateX(5px);} }
     </style>
 </head>
@@ -99,7 +60,7 @@
     </div>
     
     <div id="setup">
-        <textarea id="jsonInput" placeholder="貼上 JSON 陣列或 81 位數字字串"></textarea>
+        <textarea id="jsonInput" placeholder="Paste JSON or 81-digit string"></textarea>
         <button class="start-btn" onclick="handleStart()">START CHALLENGE</button>
     </div>
 
@@ -144,12 +105,11 @@
                 } else {
                     board = JSON.parse(input).flat();
                 }
-                
                 let boardCopy = [...board];
                 if (!solveSudoku(boardCopy)) throw "無解";
                 solution = boardCopy;
                 initGrid(board);
-            } catch (e) { alert("格式錯誤或題目無解"); }
+            } catch (e) { alert("Format Error or Unsolvable"); }
         }
 
         function solveSudoku(b) {
@@ -205,18 +165,17 @@
             if (selectedIndex === -1 || isFixed[selectedIndex] || !timerInterval) return;
             const target = document.querySelectorAll('.cell')[selectedIndex];
             const marksLayer = target.querySelector('.pencil-marks');
-
             if (pencilMode && num !== '') {
                 const m = target.querySelector(`.m${num}`), v = parseInt(num);
                 if (m.innerText === num) { m.innerText = ''; manualRemoved[selectedIndex].push(v); }
                 else { m.innerText = num; manualRemoved[selectedIndex] = manualRemoved[selectedIndex].filter(x => x !== v); }
                 marksLayer.style.display = 'grid';
-                if(target.lastChild.nodeType === 3) target.lastChild.textContent = '';
+                if(target.lastChild && target.lastChild.nodeType === 3) target.lastChild.textContent = '';
             } else {
                 if (num === '') {
                     target.classList.remove('user', 'error');
                     marksLayer.style.display = 'grid';
-                    if(target.lastChild.nodeType === 3) target.lastChild.textContent = '';
+                    if(target.lastChild && target.lastChild.nodeType === 3) target.lastChild.textContent = '';
                 } else if (parseInt(num) !== solution[selectedIndex]) {
                     errors++; document.getElementById('error-count').innerText = errors;
                     target.classList.add('error'); setTimeout(() => target.classList.remove('error'), 500);
@@ -224,7 +183,7 @@
                     target.classList.remove('error', 'user'); target.classList.add('user');
                     marksLayer.style.display = 'none';
                     const node = document.createTextNode(num);
-                    if(target.lastChild.nodeType === 3) target.lastChild.replaceWith(node); else target.appendChild(node);
+                    if(target.lastChild && target.lastChild.nodeType === 3) target.lastChild.replaceWith(node); else target.appendChild(node);
                     if (autoPencilActive) autoFillPencil();
                     checkWin();
                 }
@@ -233,8 +192,13 @@
 
         function autoFillPencil() {
             autoPencilActive = true;
-            const board = Array.from(document.querySelectorAll('.cell')).map(c => c.classList.contains('fixed') ? parseInt(c.innerText) : (c.classList.contains('user') ? parseInt(c.lastChild.textContent) : 0));
-            document.querySelectorAll('.cell').forEach((cell, idx) => {
+            const cells = document.querySelectorAll('.cell');
+            const board = Array.from(cells).map(c => {
+                if (c.classList.contains('fixed')) return parseInt(c.innerText);
+                if (c.classList.contains('user') && c.lastChild && c.lastChild.nodeType === 3) return parseInt(c.lastChild.textContent);
+                return 0;
+            });
+            cells.forEach((cell, idx) => {
                 if (!cell.classList.contains('fixed') && !cell.classList.contains('user')) {
                     cell.querySelector('.pencil-marks').style.display = 'grid';
                     for (let n = 1; n <= 9; n++) {
@@ -253,335 +217,12 @@
         }
 
         function checkWin() {
-            const board = Array.from(document.querySelectorAll('.cell')).map(c => c.classList.contains('fixed')||c.classList.contains('user') ? 1 : 0);
-            if (!board.includes(0)) {
+            const cells = document.querySelectorAll('.cell');
+            const isComplete = Array.from(cells).every(c => c.classList.contains('fixed') || c.classList.contains('user'));
+            if (isComplete) {
                 clearInterval(timerInterval); timerInterval = null;
                 document.getElementById('timer').style.color = '#00ff00';
-                setTimeout(() => alert("completion time:" + document.getElementById('timer').innerText), 100);
-            }
-        }
-    </script>
-</body>
-</html>
-        .stat-value { color: var(--accent); font-weight: bold; }
-        .error-red { color: #ff4d4d; }
-
-        #grid { 
-            display: none; 
-            grid-template-columns: repeat(9, var(--cell-size)); 
-            grid-template-rows: repeat(9, var(--cell-size)); 
-            border: var(--border-thick) solid #fff; 
-            background: #fff; 
-        }
-        .cell { 
-            width: var(--cell-size); 
-            height: var(--cell-size); 
-            background: var(--cell-bg); 
-            border: 1px solid #444; 
-            display: flex; 
-            align-items: center; 
-            justify-content: center; 
-            font-size: calc(var(--cell-size) * 0.5); 
-            cursor: pointer; 
-            box-sizing: border-box; 
-            position: relative; 
-        }
-        .cell:nth-child(3n) { border-right: var(--border-thick) solid #fff; }
-        .cell:nth-child(9n) { border-right: none; }
-        .cell:nth-child(n+19):nth-child(-n+27), .cell:nth-child(n+46):nth-child(-n+54) { border-bottom: var(--border-thick) solid #fff; }
-        
-        .cell.fixed { color: #fff; font-weight: bold; background: #2a2a2a; }
-        .cell.user { color: var(--accent); }
-        .cell.error { background: #4d1e1e; animation: shake 0.2s; }
-        .cell.selected { background: #333; outline: 2px solid var(--accent); z-index: 5; }
-
-        .pencil-marks { 
-            display: grid; 
-            grid-template-columns: repeat(3, 1fr); 
-            width: 100%; 
-            height: 100%; 
-            font-size: 10px; 
-            line-height: 10px; 
-            color: #aaa; 
-            pointer-events: none; 
-            position: absolute;
-        }
-        .pencil-mark { display: flex; align-items: center; justify-content: center; }
-
-        #controls { display: none; width: 100%; max-width: 400px; margin-top: 15px; }
-        #numpad { display: grid; grid-template-columns: repeat(5, 1fr); gap: 5px; margin-bottom: 10px; }
-        .num-btn { 
-            background: #333; 
-            color: #fff; 
-            border: 1px solid #555; 
-            padding: 15px 0; 
-            font-size: 20px; 
-            border-radius: 5px; 
-            text-align: center; 
-        }
-        .num-btn:active { background: var(--accent); }
-        .mode-btn { 
-            width: 100%; 
-            padding: 12px; 
-            background: #444; 
-            border: none; 
-            color: #fff; 
-            border-radius: 5px; 
-            font-weight: bold; 
-            margin-top: 5px;
-            font-size: 14px;
-        }
-        .mode-btn.active { background: #ff9800; }
-        .btn-auto { background: var(--success); }
-
-        #setup { width: 90%; max-width: 500px; text-align: center; margin-top: 20px; }
-        textarea { 
-            width: 100%; 
-            height: 120px; 
-            background: #222; 
-            color: #0f0; 
-            border: 1px solid #444; 
-            padding: 10px; 
-            box-sizing: border-box; 
-            font-family: monospace;
-        }
-        .start-btn { 
-            width: 100%; 
-            padding: 15px; 
-            margin-top: 10px; 
-            background: var(--accent); 
-            color: #fff; 
-            border: none; 
-            font-size: 18px; 
-            font-weight: bold; 
-        }
-
-        @keyframes shake { 0%, 100% {transform: translateX(0);} 25% {transform: translateX(-5px);} 75% {transform: translateX(5px);} }
-    </style>
-</head>
-<body>
-    <h2 style="margin: 10px 0;">ADHDFocus Lab</h2>
-    <div id="status-bar">
-        <div>TIME <span id="timer" class="stat-value">00:00.0</span></div>
-        <div>ERRORS <span id="error-count" class="stat-value">0</span></div>
-    </div>
-    
-    <div id="setup">
-        <textarea id="jsonInput" placeholder="paste JSON array like: [[5,3,0...],[...]]"></textarea>
-        <button class="start-btn" onclick="startChallenge()">START CHALLENGE</button>
-    </div>
-
-    <div id="grid"></div>
-
-    <div id="controls">
-        <button id="auto-pencil-btn" class="mode-btn btn-auto" onclick="autoFillPencil()">FAST PENCIL</button>
-        <div id="numpad" style="margin-top: 10px;">
-            <div class="num-btn" onclick="handleInput('1')">1</div>
-            <div class="num-btn" onclick="handleInput('2')">2</div>
-            <div class="num-btn" onclick="handleInput('3')">3</div>
-            <div class="num-btn" onclick="handleInput('4')">4</div>
-            <div class="num-btn" onclick="handleInput('5')">5</div>
-            <div class="num-btn" onclick="handleInput('6')">6</div>
-            <div class="num-btn" onclick="handleInput('7')">7</div>
-            <div class="num-btn" onclick="handleInput('8')">8</div>
-            <div class="num-btn" onclick="handleInput('9')">9</div>
-            <div class="num-btn" onclick="handleInput('')">⌫</div>
-        </div>
-        <button id="pencil-toggle" class="mode-btn" onclick="togglePencil()">PENCIL MODE: OFF</button>
-    </div>
-
-    <script>
-        let selectedIndex = -1;
-        let isFixed = new Array(81).fill(false);
-        let pencilMode = false;
-        let autoPencilActive = false; 
-        let manualRemoved = Array.from({ length: 81 }, () => []); 
-        let errors = 0;
-        let startTime, timerInterval;
-        let solution = [];
-
-        function solveSudoku(board) {
-            const emptyIdx = board.indexOf(0);
-            if (emptyIdx === -1) return true;
-            for (let num = 1; num <= 9; num++) {
-                if (isValidPlacement(board, emptyIdx, num)) {
-                    board[emptyIdx] = num;
-                    if (solveSudoku(board)) return true;
-                    board[emptyIdx] = 0;
-                }
-            }
-            return false;
-        }
-
-        function isValidPlacement(board, idx, val) {
-            const r = Math.floor(idx / 9), c = idx % 9;
-            for (let i = 0; i < 9; i++) {
-                if (board[r * 9 + i] === val || board[i * 9 + c] === val) return false;
-            }
-            const br = Math.floor(r / 3) * 3, bc = Math.floor(c / 3) * 3;
-            for (let i = 0; i < 3; i++) {
-                for (let j = 0; j < 3; j++) {
-                    if (board[(br + i) * 9 + (bc + j)] === val) return false;
-                }
-            }
-            return true;
-        }
-
-        function startChallenge() {
-            try {
-                const raw = document.getElementById('jsonInput').value;
-                const initialBoard = JSON.parse(raw).flat();
-                let boardCopy = [...initialBoard];
-                if (!solveSudoku(boardCopy)) { alert("無解！"); return; }
-                solution = boardCopy;
-
-                const gridEl = document.getElementById('grid');
-                gridEl.innerHTML = '';
-                initialBoard.forEach((val, i) => {
-                    const cell = document.createElement('div');
-                    cell.className = val === 0 ? 'cell' : 'cell fixed';
-                    const marks = document.createElement('div');
-                    marks.className = 'pencil-marks';
-                    for(let m=1; m<=9; m++) {
-                        const mark = document.createElement('div');
-                        mark.className = `pencil-mark m${m}`;
-                        marks.appendChild(mark);
-                    }
-                    cell.appendChild(marks);
-                    if(val !== 0) {
-                        cell.appendChild(document.createTextNode(val));
-                        marks.style.display = 'none';
-                        isFixed[i] = true;
-                    }
-                    cell.onclick = () => selectCell(i);
-                    gridEl.appendChild(cell);
-                });
-
-                document.getElementById('setup').style.display = 'none';
-                gridEl.style.display = 'grid';
-                document.getElementById('controls').style.display = 'block';
-                startTime = Date.now();
-                timerInterval = setInterval(updateTimer, 100);
-            } catch (e) { alert("JSON 格式錯誤"); }
-        }
-
-        function updateTimer() {
-            const diff = (Date.now() - startTime) / 1000;
-            const m = Math.floor(diff / 60).toString().padStart(2, '0');
-            const s = (diff % 60).toFixed(1).padStart(4, '0');
-            document.getElementById('timer').innerText = `${m}:${s}`;
-        }
-
-        function selectCell(i) {
-            selectedIndex = i;
-            document.querySelectorAll('.cell').forEach((c, idx) => c.classList.toggle('selected', idx === i));
-        }
-
-        function togglePencil() {
-            pencilMode = !pencilMode;
-            const btn = document.getElementById('pencil-toggle');
-            btn.innerText = pencilMode ? "PENCIL MODE: ON" : "PENCIL MODE: OFF";
-            btn.classList.toggle('active', pencilMode);
-        }
-
-        function autoFillPencil() {
-            if (!timerInterval) return;
-            autoPencilActive = true;
-            const board = getSnapshot();
-            const cells = document.querySelectorAll('.cell');
-
-            cells.forEach((cell, idx) => {
-                if (!cell.classList.contains('fixed') && !cell.classList.contains('user')) {
-                    const marksLayer = cell.querySelector('.pencil-marks');
-                    marksLayer.style.display = 'grid';
-                    for (let n = 1; n <= 9; n++) {
-                        const mark = cell.querySelector(`.m${n}`);
-                        if (isConflict(idx, n, board) || manualRemoved[idx].includes(n)) {
-                            mark.innerText = '';
-                        } else {
-                            mark.innerText = n;
-                        }
-                    }
-                }
-            });
-        }
-
-        function handleInput(num) {
-            if (selectedIndex === -1 || isFixed[selectedIndex] || !timerInterval) return;
-            const cells = document.querySelectorAll('.cell');
-            const target = cells[selectedIndex];
-            const marksLayer = target.querySelector('.pencil-marks');
-
-            if (pencilMode && num !== '') {
-                const mark = target.querySelector(`.m${num}`);
-                const val = parseInt(num);
-                if (mark.innerText === num) {
-                    mark.innerText = '';
-                    if (!manualRemoved[selectedIndex].includes(val)) manualRemoved[selectedIndex].push(val);
-                } else {
-                    mark.innerText = num;
-                    manualRemoved[selectedIndex] = manualRemoved[selectedIndex].filter(v => v !== val);
-                }
-                marksLayer.style.display = 'grid';
-                if(target.lastChild.nodeType === 3) target.lastChild.textContent = ''; 
-            } else {
-                if (num === '') {
-                    target.classList.remove('user', 'error');
-                    marksLayer.style.display = 'grid';
-                    if(target.lastChild.nodeType === 3) target.lastChild.textContent = '';
-                } else {
-                    if (parseInt(num) !== solution[selectedIndex]) {
-                        errors++;
-                        document.getElementById('error-count').innerText = errors;
-                        target.classList.add('error');
-                        setTimeout(() => target.classList.remove('error'), 500);
-                    } else {
-                        target.classList.remove('error', 'user');
-                        target.classList.add('user');
-                        marksLayer.style.display = 'none';
-                        const textNode = document.createTextNode(num);
-                        if(target.lastChild.nodeType === 3) target.lastChild.replaceWith(textNode);
-                        else target.appendChild(textNode);
-
-                        if (autoPencilActive) autoFillPencil();
-                        checkWin();
-                    }
-                }
-            }
-        }
-
-        function getSnapshot() {
-            const cells = document.querySelectorAll('.cell');
-            return Array.from(cells).map(cell => {
-                if(cell.classList.contains('fixed')) return parseInt(cell.innerText);
-                if(cell.classList.contains('user') && cell.lastChild.nodeType === 3) return parseInt(cell.lastChild.textContent);
-                return 0;
-            });
-        }
-
-        function isConflict(idx, val, board) {
-            const r = Math.floor(idx / 9), c = idx % 9;
-            for (let i = 0; i < 9; i++) {
-                if (i !== c && board[r * 9 + i] === val) return true;
-                if (i !== r && board[i * 9 + c] === val) return true;
-            }
-            const br = Math.floor(r / 3) * 3, bc = Math.floor(c / 3) * 3;
-            for (let i = 0; i < 3; i++) {
-                for (let j = 0; j < 3; j++) {
-                    const row = br + i, col = bc + j;
-                    if ((row !== r || col !== c) && board[row * 9 + col] === val) return true;
-                }
-            }
-            return false;
-        }
-
-        function checkWin() {
-            const board = getSnapshot();
-            if (!board.includes(0)) {
-                clearInterval(timerInterval);
-                timerInterval = null;
-                document.getElementById('timer').style.color = '#00ff00';
-                setTimeout(() => alert("completion time:" + document.getElementById('timer').innerText), 100);
+                setTimeout(() => alert("🎉 Completion Time: " + document.getElementById('timer').innerText), 100);
             }
         }
     </script>
