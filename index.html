@@ -88,12 +88,14 @@
         let manualRemoved = Array.from({ length: 81 }, () => []), isFixed = new Array(81).fill(false);
 
         window.onload = () => {
-            const urlParams = new URLSearchParams(window.location.search);
-            const puzzle = urlParams.get('puzzle');
-            if (puzzle) {
-                document.getElementById('jsonInput').value = puzzle;
-                handleStart();
-            }
+    const urlParams = new URLSearchParams(window.location.search);
+    const puzzle = urlParams.get('puzzle');
+    if (puzzle) {
+        // 只將數列填入框內，不執行 handleStart()
+        document.getElementById('jsonInput').value = puzzle;
+    }
+};
+
         };
 
         function handleStart() {
