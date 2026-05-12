@@ -1,34 +1,49 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>隨機貓咪產生器</title>
+    <title>台北天氣儀表板</title>
     <style>
-        body { text-align: center; font-family: sans-serif; padding-top: 50px; }
-        img { max-width: 500px; border-radius: 10px; margin-top: 20px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
-        button { padding: 10px 20px; font-size: 16px; cursor: pointer; }
+        body { text-align: center; font-family: "Microsoft JhengHei", sans-serif; background: #f0f8ff; padding-top: 50px; }
+        .card { background: white; padding: 30px; border-radius: 20px; display: inline-block; box-shadow: 0 10px 20px rgba(0,0,0,0.1); }
+        h1 { color: #333; }
+        .temp { font-size: 48px; color: #ff8c00; font-weight: bold; }
+        .info { font-size: 18px; color: #666; margin: 10px 0; }
+        button { padding: 10px 20px; border: none; background: #007bff; color: white; border-radius: 5px; cursor: pointer; }
     </style>
 </head>
 <body>
 
-    <h1>下一隻貓咪</h1>
-    <button onclick="getCat()">點我換貓</button>
-    <div id="catBox"></div>
+    <div class="card">
+        <h1>台北市即時天氣</h1>
+        <div id="weather">載入中...</div>
+        <button onclick="getWeather()">更新天氣</button>
+    </div>
 
     <script>
-        function getCat() {
-            // 1. 發送請求給 API
-            fetch('https://api.thecatapi.com/v1/images/search')
-                .then(response => response.json()) // 2. 轉換資料格式
+        function getWeather() {
+            // 台北的經緯度：25.03, 121.56
+            const url = 'https://api.open-meteo.com/v1/forecast?latitude=25.03&longitude=121.56&current_weather=true';
+
+            fetch(url)
+                .then(response => response.json())
                 .then(data => {
-                    // 3. 取得圖片網址並顯示在網頁上
-                    const imgUrl = data[0].url;
-                    document.getElementById('catBox').innerHTML = `<img src="${imgUrl}">`;
+                    const temp = data.current_weather.temperature;
+                    const wind = data.current_weather.windspeed;
+                    const time = data.current_weather.time;
+
+                    document.getElementById('weather').innerHTML = `
+                        <div class="temp">${temp}°C</div>
+                        <div class="info">風速：${wind} km/h</div>
+                        <div class="info">觀測時間：${time}</div>
+                    `;
                 })
-                .catch(error => console.error('發生錯誤:', error));
+                .catch(error => {
+                    document.getElementById('weather').innerText = '讀取失敗';
+                    console.error(error);
+                });
         }
 
-        // 網頁一打開就先抓一張
-        getCat();
+        getWeather(); // 網頁開啟時先跑一次
     </script>
 </body>
 </html>
