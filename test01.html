@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>隨機貓咪產生器</title>
+    <style>
+        body { text-align: center; font-family: sans-serif; padding-top: 50px; }
+        img { max-width: 500px; border-radius: 10px; margin-top: 20px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
+        button { padding: 10px 20px; font-size: 16px; cursor: pointer; }
+    </style>
+</head>
+<body>
+
+    <h1>下一隻貓咪</h1>
+    <button onclick="getCat()">點我換貓</button>
+    <div id="catBox"></div>
+
+    <script>
+        function getCat() {
+            // 1. 發送請求給 API
+            fetch('https://api.thecatapi.com/v1/images/search')
+                .then(response => response.json()) // 2. 轉換資料格式
+                .then(data => {
+                    // 3. 取得圖片網址並顯示在網頁上
+                    const imgUrl = data[0].url;
+                    document.getElementById('catBox').innerHTML = `<img src="${imgUrl}">`;
+                })
+                .catch(error => console.error('發生錯誤:', error));
+        }
+
+        // 網頁一打開就先抓一張
+        getCat();
+    </script>
+</body>
+</html>
