@@ -34,7 +34,18 @@
 
 <script src="api-key.js"></script>
 <script src="identify-prompt.js"></script>
-
+<script>
+    // 直接定義，不再外連檔案
+    const IDENTIFY_CONFIG = {
+        PROMPT: "81 digits pure number in a row",
+        MODEL: "gemini-1.5-flash", // 注意：請確認 3.1-flash-lite 是否已在你的區域開放，建議先用 1.5-flash 測試
+        GENERATION: {
+            temperature: 0,
+            topP: 1,
+            maxOutputTokens: 100
+        }
+    };
+</script>
 <script>
     const apiKeyInput = document.getElementById('apiKeyInput');
     
