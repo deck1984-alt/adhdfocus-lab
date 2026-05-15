@@ -20,12 +20,14 @@
             padding: 20px; 
         }
         .container { width: 90%; max-width: 500px; text-align: center; margin-top: 50px; }
-        h1 { color: var(--accent); margin-bottom: 30px; }
+        h1 { color: var(--accent); margin-bottom: 30px; letter-spacing: 1px; }
         textarea { 
             width: 100%; height: 150px; background: #222; color: #0f0; 
             border: 1px solid #444; padding: 15px; box-sizing: border-box; 
             font-family: monospace; border-radius: 8px; font-size: 16px;
+            outline: none;
         }
+        textarea:focus { border-color: var(--accent); }
         .btn { 
             width: 100%; padding: 15px; margin-top: 15px; border: none; 
             border-radius: 8px; font-size: 18px; font-weight: bold; cursor: pointer; 
@@ -50,10 +52,20 @@
     </div>
 
     <script>
+        // 頁面載入時檢查參數，但不跳轉
+        window.onload = () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            const puzzle = urlParams.get('puzzle');
+            if (puzzle) {
+                // 只將數列填入框內，讓使用者確認
+                document.getElementById('jsonInput').value = puzzle;
+            }
+        };
+
         function goToGame() {
             const input = document.getElementById('jsonInput').value.trim();
             if (input) {
-                // 將數列編碼到網址參數中跳轉
+                // 將目前框內的數列帶往遊戲頁面
                 window.location.href = `sukodu.html?puzzle=${encodeURIComponent(input)}`;
             } else {
                 alert("請先輸入數獨數列或使用辨識功能");
