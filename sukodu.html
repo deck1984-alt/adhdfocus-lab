@@ -234,7 +234,7 @@
             if (isComplete) {
                 clearInterval(timerInterval); timerInterval = null;
                 document.getElementById('timer').style.color = '#00ff00';
-                setTimeout(() => alert("🎉 完成挑戰！"), 100);
+                setTimeout(() => alert("🎉 Completion Time: " + document.getElementById('timer').innerText), 100);
             }
         }
     </script>
