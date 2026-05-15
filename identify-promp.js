@@ -1,37 +1,54 @@
 // 模擬環境變數與 Prompt 封裝
 const IDENTIFY_CONFIG = {
     // 這裡放你的 Prompt 範本
-    PROMPT: "Sudoku Multi-Stage Processing Prompt (Full Workflow Automation)
-​[IMPORTANT: Do not generate the final sequence immediately. This is a multi-step task.]
-​Input: A 9x9 Sudoku image with 0-9 digits and empty cells.
-​Your Role: You are an automated image-to-data conversion pipeline. Your goal is to extract the Sudoku grid into a single 81-digit string with 100% precision. Because direct extraction from the full image is prone to misalignment (the 'counting zeros' hallucination), you must execute the following multi-step workflow.
-​Stage 1: Image Pre-processing (Analytical Simulation)
-​Your first task is to mentally simulate image pre-processing to isolate the data. Since you are an LLM, represent these visual transforms analytically.
-​Grid Localization: Analyze the input image to find the four extreme corners of the main 9x9 grid.
-​[ACTION: Perform Perspective Transform]
-​Normalization: Conceptually warp and rectify the grid image so it becomes a perfect, square 9x9 grid, eliminating phone screen skew or rotation.
-​Sub-grid Cropping (9x): Dice this rectified image into exactly 9 equal-sized sub-images, corresponding to the nine 3x3 blocks.
-​Name them conceptually: Block_1x1 (Top-Left), Block_1x2 (Top-Center), ... Block_3x3 (Bottom-Right).
-​Stage 2: Localized OCR (9 Discrete Queries)
-​You must now analyze each of the nine conceptual cropped sub-images INDIVIDUALLY. Analyze only the data contained within each conceptual sub-image. Represent empty cells as '0'.
-​Execute and output the 3x3 results in matrix format:
-​Result 1 (Top-Left 3x3): 0,0,0 / 0,9,0 / 0,7,8
-​Result 2 (Top-Center 3x3): 0,5,9 / 7,6,0 / 0,0,0
-​Result 3 (Top-Right 3x3): 0,0,0 / 0,0,1 / 9,0,0
-​Result 4 (Mid-Left 3x3): 3,0,0 / 9,1,0 / 0,0,0
-​Result 5 (Mid-Center 3x3): 0,9,6 / 0,0,0 / 1,8,0
-​Result 6 (Mid-Right 3x3): 0,0,0 / 2,8,0 / 0,0,9
-​Result 7 (Bottom-Left 3x3): 0,2,0 / 5,0,0 / 0,0,0
-​Result 8 (Bottom-Center 3x3): 0,0,0 / 2,7,0 / 6,1,0
-​Result 9 (Bottom-Right 3x3): 8,7,0 / 0,6,0 / 0,0,0
-​Stage 3: Synthesis and Code-Based Validation
-​You must now rebuild the full 9x9 matrix from the validated 3x3 block data and perform multiple checks.
-​Reconstruction: Combine the 3x3 results row-by-row to reconstruct the full grid.
-​Pre-computation Validation (LLM Internal Check):
-​Check 1: Length Verification -> (81 digits? Yes/No)
-​Check 2: Sudoku Integrity Check -> (Scan every Row, Column, and 3x3 sub-grid for duplicate numbers. Are there violations? Yes/No)
-​Stage 4: Final Accurate Sequence (Output)
-​If all validation checks in Stage 3 pass with 100% confidence, output the final sequence as a pure, concatenated number string.",
+    PROMPT: “[SYSTEM_INIT: SUDOKU_GRID_PARSER_V2.0]
+[OBJECTIVE: MAP_PIXELS_TO_COORDINATES]
+
+{
+  "STRICT_MODE": "TRUE",
+  "EMPTY_CELL": "0",
+  "GRID_DIM": "9x9",
+  "CELL_MAP": {
+    "R[1-9]C[1-9]": "SCAN_ORDER_TOP_TO_BOTTOM_LEFT_TO_RIGHT"
+  }
+}
+
+### 1. GEOMETRIC_ANCHORING
+FOR EACH (cell IN grid) {
+  X_AXIS = DEFINE_NINE_COLUMN_SLOTS(GRID_WIDTH / 9);
+  Y_AXIS = DEFINE_NINE_ROW_SLOTS(GRID_HEIGHT / 9);
+  LOCK_COORDINATE(cell.R, cell.C);
+}
+
+### 2. COORDINATE_DRIVEN_OCR (R-C MAPPING)
+DO NOT EXTRACT BY VISUAL FLOW. EXTRACT BY SLOT ADDRESS:
+R1C1,R1C2,R1C3 | R1C4,R1C5,R1C6 | R1C7,R1C8,R1C9
+R2C1,R2C2,R2C3 | R2C4,R2C5,R2C6 | R2C7,R2C8,R2C9
+...
+R9C1,R9C2,R9C3 | R9C4,R9C5,R9C6 | R9C7,R9C8,R9C9
+
+[CRITICAL_LOGIC]: IF (Slot(RnCn) == NULL || BACKGROUND_ONLY) RETURN "0".
+[COLOR_BYPASS]: IGNORE HEX(#3b5998), IGNORE HEX(#ffffff20).
+
+### 3. BLOCK_INTEGRITY_LOOP
+VERIFY_BLOCK(B1-B9) {
+  DATA_STRUCTURE: 3x3_ARRAY;
+  VALIDATE: SUM_CHECK_NOT_REQUIRED;
+  VALIDATE: UNIQUENESS_CHECK_PER_ROW_COL_BLOCK;
+}
+
+### 4. OUTPUT_FORMAT
+- BLOCK_DUMP: Display 3x3 blocks with explicit R/C coordinates for manual audit.
+- FINAL_STREAM: 81-character continuous string [0-9].
+
+### 5. ERROR_RECOVERY_PROTOCOL
+IF (DUPLICATE_FOUND_IN_ROW_OR_COL) {
+  RE_SCAN(CONFLICT_COORDINATES);
+  VERIFY_ALIGNMENT(NEIGHBOR_SLOTS);
+}
+
+[EXECUTE_NOW]
+",
     
     // 也可以順便把模型名稱包進來，方便以後一次改
     MODEL_NAME: "gemini-3.1-flash-lite",
