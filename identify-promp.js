@@ -1,52 +1,16 @@
 // 辨識邏輯設定
 const IDENTIFY_CONFIG = {
-    PROMPT: "[SYSTEM_INIT: SUDOKU_GRID_PARSER_V2.0]
-[OBJECTIVE: MAP_PIXELS_TO_COORDINATES]
-
-{
-  "STRICT_MODE": "TRUE",
-  "EMPTY_CELL": "0",
-  "GRID_DIM": "9x9",
-  "CELL_MAP": {
-    "R[1-9]C[1-9]": "SCAN_ORDER_TOP_TO_BOTTOM_LEFT_TO_RIGHT"
-  }
-}
-
-### 1. GEOMETRIC_ANCHORING
-FOR EACH (cell IN grid) {
-  X_AXIS = DEFINE_NINE_COLUMN_SLOTS(GRID_WIDTH / 9);
-  Y_AXIS = DEFINE_NINE_ROW_SLOTS(GRID_HEIGHT / 9);
-  LOCK_COORDINATE(cell.R, cell.C);
-}
-
-### 2. COORDINATE_DRIVEN_OCR (R-C MAPPING)
-DO NOT EXTRACT BY VISUAL FLOW. EXTRACT BY SLOT ADDRESS:
-R1C1,R1C2,R1C3 | R1C4,R1C5,R1C6 | R1C7,R1C8,R1C9
-R2C1,R2C2,R2C3 | R2C4,R2C5,R2C6 | R2C7,R2C8,R2C9
-...
-R9C1,R9C2,R9C3 | R9C4,R9C5,R9C6 | R9C7,R9C8,R9C9
-
-[CRITICAL_LOGIC]: IF (Slot(RnCn) == NULL || BACKGROUND_ONLY) RETURN "0".
-[COLOR_BYPASS]: IGNORE HEX(#3b5998), IGNORE HEX(#ffffff20).
-
-### 3. BLOCK_INTEGRITY_LOOP
-VERIFY_BLOCK(B1-B9) {
-  DATA_STRUCTURE: 3x3_ARRAY;
-  VALIDATE: SUM_CHECK_NOT_REQUIRED;
-  VALIDATE: UNIQUENESS_CHECK_PER_ROW_COL_BLOCK;
-}
-
-### 4. OUTPUT_FORMAT
-- BLOCK_DUMP: Display 3x3 blocks with explicit R/C coordinates for manual audit.
-- FINAL_STREAM: 81-character continuous string [0-9].
-
-### 5. ERROR_RECOVERY_PROTOCOL
-IF (DUPLICATE_FOUND_IN_ROW_OR_COL) {
-  RE_SCAN(CONFLICT_COORDINATES);
-  VERIFY_ALIGNMENT(NEIGHBOR_SLOTS);
-}
-
-[EXECUTE_NOW]",
+    PROMPT: "Here is a condensed, prompt-ready version of your logic that you can wrap in quotes. It focuses on the strict coordinate mapping and the specific output format you requested.
+"Act as a high-precision Sudoku OCR parser. Your goal is to map a 9x9 grid into a coordinate-driven data structure.
+**Extraction Rules:**
+ 1. **Grid Geometry:** Divide the image into 9 equal row slots and 9 equal column slots.
+ 2. **Coordinate Mapping:** Scan every cell by address (R1C1 through R9C9). If a cell is empty or contains only background colors, assign it '0'.
+ 3. **Logic Gate:** Ignore visual flow; extract strictly by slot address.
+ 4. **Validation:** Check each 3x3 block, row, and column for number uniqueness (1-9). If a duplicate is detected, re-scan the specific coordinates to fix the alignment.
+**Required Output:**
+ 1. **Block Dump:** List the contents of all nine 3x3 blocks with explicit R/C labels for auditing.
+ 2. **Final Stream:** Provide a single 81-character string representing the full grid (e.g., 00302...)."
+",
     MODEL: "gemini-3.1-flash-lite", // 使用你清單中最穩定的 Lite 模型
     GENERATION: {
         temperature: 0,
