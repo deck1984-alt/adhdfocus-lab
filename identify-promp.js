@@ -6,5 +6,5 @@ const IDENTIFY_CONFIG = {
         temperature: 0,
         topP: 1,
         maxOutputTokens: 100
-    }
+    },
 };
