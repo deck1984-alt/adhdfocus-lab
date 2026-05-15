@@ -46,8 +46,7 @@ IF (DUPLICATE_FOUND_IN_ROW_OR_COL) {
   VERIFY_ALIGNMENT(NEIGHBOR_SLOTS);
 }
 
-[EXECUTE_NOW]
-",
+[EXECUTE_NOW]",
     MODEL: "gemini-3.1-flash-lite", // 使用你清單中最穩定的 Lite 模型
     GENERATION: {
         temperature: 0,
