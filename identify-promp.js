@@ -1,7 +1,6 @@
-// 模擬環境變數與 Prompt 封裝
+// 辨識邏輯設定
 const IDENTIFY_CONFIG = {
-    // 這裡放你的 Prompt 範本
-    PROMPT: “[SYSTEM_INIT: SUDOKU_GRID_PARSER_V2.0]
+    PROMPT: "[SYSTEM_INIT: SUDOKU_GRID_PARSER_V2.0]
 [OBJECTIVE: MAP_PIXELS_TO_COORDINATES]
 
 {
@@ -49,13 +48,9 @@ IF (DUPLICATE_FOUND_IN_ROW_OR_COL) {
 
 [EXECUTE_NOW]
 ",
-    
-    // 也可以順便把模型名稱包進來，方便以後一次改
-    MODEL_NAME: "gemini-3.1-flash-lite",
-    
-    // 生成參數
-    GENERATION_CONFIG: {
-        temperature: 0.1,
+    MODEL: "gemini-3.1-flash-lite", // 使用你清單中最穩定的 Lite 模型
+    GENERATION: {
+        temperature: 0,
         topP: 1,
         maxOutputTokens: 100
     }
