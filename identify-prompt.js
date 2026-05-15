@@ -6,6 +6,6 @@ const IDENTIFY_CONFIG = {
     GENERATION: {
         temperature: 0,
         topP: 1,
-        maxOutputTokens: 100
+        maxOutputTokens: 200
     },
 };
