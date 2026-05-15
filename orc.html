@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>數獨辨識子系統 - v5.1 Pro</title>
+    <style>
+        :root { 
+            --bg-color: #121212; 
+            --card-bg: #1e1e1e;
+            --text-color: #e0e0e0; 
+            --accent-color: #4caf50; 
+            --error-color: #cf6679; 
+            --warning-color: #ffb74d;
+        }
+        body { 
+            font-family: sans-serif; 
+            background-color: var(--bg-color); 
+            color: var(--text-color); 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            justify-content: center; 
+            min-height: 100vh; 
+            margin: 0; 
+            padding: 20px; 
+        }
+        .container { 
+            max-width: 400px; 
+            width: 100%; 
+            text-align: center; 
+            border: 1px solid #333; 
+            padding: 2rem; 
+            border-radius: 12px; 
+            background: var(--card-bg); 
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+        input[type="text"], input[type="file"] { 
+            width: 100%; 
+            margin: 10px 0; 
+            padding: 12px; 
+            background: #2c2c2c; 
+            border: 1px solid #444; 
+            color: white; 
+            border-radius: 6px; 
+            box-sizing: border-box; 
+        }
+        button { 
+            width: 100%; 
+            padding: 14px; 
+            background-color: var(--accent-color); 
+            color: white; 
+            border: none; 
+            border-radius: 6px; 
+            cursor: pointer; 
+            font-size: 16px; 
+            margin-top: 10px;
+            font-weight: bold;
+            transition: opacity 0.2s;
+        }
+        button:disabled { opacity: 0.5; cursor: not-allowed; }
+        #status { 
+            margin-top: 20px; 
+            font-size: 14px; 
+            line-height: 1.5;
+            word-break: break-all; 
+            min-height: 1.5em;
+        }
+        hr { border: 0; border-top: 1px solid #333; margin: 20px 0; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>數獨掃描器 (v3.1 Lite)</h2>
+    <input type="text" id="apiKey" placeholder="貼上 Gemini API Key">
+    <hr>
+    <input type="file" id="imageInput" accept="image/*">
+    <button id="scanBtn">開始辨識並回傳</button>
+    <div id="status">準備就緒</div>
+</div>
+
+<script>
+    // 自動載入上次的 Key
+    const keyInput = document.getElementById('apiKey');
+    keyInput.value = localStorage.getItem('sudoku_gemini_key') || '';
+
+    document.getElementById('scanBtn').onclick = async function() {
+        const fileInput = document.getElementById('imageInput');
+        const apiKey = keyInput.value.trim();
+        const status = document.getElementById('status');
+        const btn = this;
+
+        if (!apiKey || fileInput.files.length === 0) {
+            alert('請檢查 Key 或是否已選擇圖片');
+            return;
+        }
+
+        // 儲存 Key
+        localStorage.setItem('sudoku_gemini_key', apiKey);
+        
+        // 進入讀取狀態
+        btn.disabled = true;
+        status.style.color = "var(--accent-color)";
+        status.innerText = "正在處理圖片並連線至 Gemini...";
+
+        try {
+            const file = fileInput.files[0];
+            const mimeType = file.type || "image/jpeg";
+            
+            // 讀取圖片 Base64
+            const base64Data = await new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = () => resolve(reader.result.split(',')[1]);
+                reader.onerror = reject;
+                reader.readAsDataURL(file);
+            });
+
+            // 使用你清單中權限最穩定的模型
+            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite:generateContent?key=${apiKey}`;
+
+            status.innerText = "辨識中，請稍候...";
+
+            const response = await fetch(apiUrl, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    contents: [{
+                        parts: [
+                            { text: "Return only the 81 digits of the Sudoku in the image as a single line. Use 0 for empty cells. Do not include any other text." },
+                            { inline_data: { mime_type: mimeType, data: base64Data } }
+                        ]
+                    }],
+                    generationConfig: {
+                        temperature: 0.1, // 降低隨機性
+                    }
+                })
+            });
+
+            // 處理常見的 API 錯誤狀態
+            if (response.status === 429) {
+                status.style.color = "var(--warning-color)";
+                status.innerText = "額度超限 (Quota Exceeded)，6 秒後自動重試...";
+                setTimeout(() => { btn.disabled = false; btn.click(); }, 6000);
+                return;
+            }
+
+            const resData = await response.json();
+
+            if (resData.error) {
+                throw new Error(resData.error.message);
+            }
+
+            // 解析回傳內容
+            if (!resData.candidates || !resData.candidates[0].content) {
+                throw new Error("無法辨識圖片內容，請確保數獨清晰。");
+            }
+
+            const rawText = resData.candidates[0].content.parts[0].text;
+            // 過濾非數字，補齊 81 碼
+            const finalSequence = rawText.replace(/[^0-9]/g, '').padEnd(81, '0').slice(0, 81);
+
+            status.innerText = "成功！正在跳轉...";
+            status.style.color = "var(--accent-color)";
+
+            // 延遲跳轉
+            setTimeout(() => {
+                window.location.href = `index.html?puzzle=${finalSequence}`;
+            }, 800);
+
+        } catch (err) {
+            status.innerText = "錯誤: " + err.message;
+            status.style.color = "var(--error-color)";
+            btn.disabled = false;
+            console.error("Debug Info:", err);
+        }
+    };
+</script>
+
+</body>
+</html>
