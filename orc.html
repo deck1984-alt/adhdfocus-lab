@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>數獨辨識 v5.1 - ADHDFocusLAB 版</title>
+    <title>數獨辨識 v5.2 - ADHDFocusLAB 版</title>
     <style>
         :root { --bg-color: #121212; --accent-color: #4caf50; --error-color: #cf6679; --info-color: #2196f3; }
         body { font-family: sans-serif; background: var(--bg-color); color: #eee; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; margin: 0; padding: 20px; }
@@ -124,7 +124,7 @@
 
             const result = data.candidates[0].content.parts[0].text.replace(/[^0-9]/g, '').slice(0, 81);
             
-            if (result.length < 81) throw new Error("辨識不足 81 碼，請重拍或保持圖片清晰。\n"+ result);
+            if (result.length < 81) throw new Error(IDENTIFY_CONFIG.PROMPT+"\n辨識不足 81 碼，請重拍或保持圖片清晰。\n"+ result);
 
             status.innerText = "辨識成功！跳轉中...";
             window.location.href = `index.html?puzzle=${result}`;
