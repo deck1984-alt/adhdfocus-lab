@@ -6,13 +6,14 @@
     <title>ADHDFocus LAB</title>
     <style>
         :root { 
-            --accent: #4dadff;
-            --bg: #121212;
-            --secondary: #607d8b;
+            --accent: #c4dc9c;       /* 截圖中的淺綠色 (FAST PENCIL 按鈕) */
+            --bg: #f7f0e4;           /* 截圖中的淺米色背景 */
+            --text-dark: #402e20;    /* 截圖中的深褐色文字/數字 */
+            --secondary: #e6dac8;    /* 截圖中的深米色 (功能按鈕) */
         }
         body { 
             background: var(--bg); 
-            color: #e0e0e0; 
+            color: var(--text-dark); 
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; 
             display: flex; 
             flex-direction: column; 
@@ -20,20 +21,21 @@
             padding: 20px; 
         }
         .container { width: 90%; max-width: 500px; text-align: center; margin-top: 50px; }
-        h1 { color: var(--accent); margin-bottom: 30px; letter-spacing: 1px; }
+        h1 { color: var(--text-dark); margin-bottom: 30px; letter-spacing: 1px; font-weight: bold; }
         textarea { 
-            width: 100%; height: 150px; background: #222; color: #0f0; 
-            border: 1px solid #444; padding: 15px; box-sizing: border-box; 
-            font-family: monospace; border-radius: 8px; font-size: 16px;
-            outline: none;
+            width: 100%; height: 150px; background: #fffdf9; color: var(--text-dark); 
+            border: 2px solid #dfd3c3; padding: 15px; box-sizing: border-box; 
+            font-family: monospace; border-radius: 12px; font-size: 16px;
+            outline: none; box-shadow: inset 0 1px 3px rgba(0,0,0,0.05);
         }
-        textarea:focus { border-color: var(--accent); }
+        textarea:focus { border-color: var(--text-dark); }
         .btn { 
-            width: 100%; padding: 15px; margin-top: 15px; border: none; 
-            border-radius: 8px; font-size: 18px; font-weight: bold; cursor: pointer; 
-            color: #fff; transition: 0.2s;
+            width: 100%; padding: 15px; margin-top: 15px; border: 2px solid #c2b4a2; 
+            border-radius: 12px; font-size: 18px; font-weight: bold; cursor: pointer; 
+            color: var(--text-dark); transition: 0.2s;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
         }
-        .start-btn { background: var(--accent); }
+        .start-btn { background: var(--accent); border-color: #a9c57d; }
         .identify-btn { background: var(--secondary); display: flex; align-items: center; justify-content: center; gap: 10px; }
         .btn:active { transform: scale(0.98); opacity: 0.9; }
     </style>
@@ -52,20 +54,17 @@
     </div>
 
     <script>
-        // 頁面載入時檢查參數，但不跳轉
         window.onload = () => {
             const urlParams = new URLSearchParams(window.location.search);
             const puzzle = urlParams.get('puzzle');
             if (puzzle) {
-                // 只將數列填入框內，讓使用者確認
                 document.getElementById('jsonInput').value = puzzle;
             }
         };
 
-        function goToGame() {
+        fn goToGame() {
             const input = document.getElementById('jsonInput').value.trim();
             if (input) {
-                // 將目前框內的數列帶往遊戲頁面
                 window.location.href = `sukodu.html?puzzle=${encodeURIComponent(input)}`;
             } else {
                 alert("請先輸入數獨數列或使用辨識功能");
