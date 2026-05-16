@@ -67,6 +67,15 @@
         button:disabled { 
             opacity: 0.5; 
         }
+        .btn-secondary {
+            background: #ffffff;
+            border: 2px solid #dfd3c3;
+            color: #7a6e65;
+            margin-top: 15px;
+        }
+        .btn-secondary:active {
+            background: #f7f0e4;
+        }
         #status { 
             margin-top: 15px; 
             font-size: 14px; 
@@ -96,6 +105,9 @@
     <button id="scanBtn">開始辨識</button>
     
     <div id="status">準備就緒</div>
+
+    <hr style="border: 0; border-top: 2px solid #dfd3c3; margin: 20px 0;">
+    <button class="btn-secondary" onclick="window.location.href='index.html'">回首頁</button>
 </div>
 
 <script src="api-key.js"></script>
