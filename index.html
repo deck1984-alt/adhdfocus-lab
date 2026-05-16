@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+ok<!DOCTYPE html>
 <html lang="zh-TW">
 <head>
     <meta charset="UTF-8">
@@ -53,8 +53,8 @@
         </button>
     </div>
 
-    <script>
-                // 頁面載入時檢查參數，但不跳轉
+        <script>
+        // 頁面載入時檢查參數，但不跳轉
         window.onload = () => {
             const urlParams = new URLSearchParams(window.location.search);
             const puzzle = urlParams.get('puzzle');
@@ -64,9 +64,10 @@
             }
         };
 
-        fn goToGame() {
+        function goToGame() {
             const input = document.getElementById('jsonInput').value.trim();
             if (input) {
+                // 將目前框內的數列帶往遊戲頁面
                 window.location.href = `sukodu.html?puzzle=${encodeURIComponent(input)}`;
             } else {
                 alert("請先輸入數獨數列或使用辨識功能");
