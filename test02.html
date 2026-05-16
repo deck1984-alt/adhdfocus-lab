@@ -54,7 +54,7 @@
         /* 題目格樣式 */
         .cell.fixed { color: var(--text-main); background: var(--fixed-bg); }
         /* 使用者填入的字體顏色 */
-        .cell.user { color: #d97724; } 
+        .cell.user { color: #008022; } 
         .cell.error { background: #fcdcd7; animation: shake 0.2s; }
         .cell.selected { background: #f3e5d0; outline: 3px solid var(--accent); z-index: 5; outline-offset: -3px; }
         
@@ -261,7 +261,7 @@
             if (isComplete) {
                 clearInterval(timerInterval); timerInterval = null;
                 document.getElementById('timer').style.color = '#6e8b3d';
-                setTimeout(() => alert("🎉 太棒了，成功通關！"), 100);
+                setTimeout(() => alert("🎉 Completion Time: " + document.getElementById('timer').innerText), 100);
             }
         }
     </script>
