@@ -54,10 +54,12 @@
     </div>
 
     <script>
+                // 頁面載入時檢查參數，但不跳轉
         window.onload = () => {
             const urlParams = new URLSearchParams(window.location.search);
             const puzzle = urlParams.get('puzzle');
             if (puzzle) {
+                // 只將數列填入框內，讓使用者確認
                 document.getElementById('jsonInput').value = puzzle;
             }
         };
