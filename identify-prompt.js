@@ -6,6 +6,6 @@ const IDENTIFY_CONFIG = {
     GENERATION: {
         temperature: 0,
         topP: 1,
-        maxOutputTokens: 160 // 保持你最舒服的偶數設定，給予足夠的 81 碼輸出空間
+        maxOutputTokens: 200 // 保持你最舒服的偶數設定，給予足夠的 81 碼輸出空間
     }
 };
