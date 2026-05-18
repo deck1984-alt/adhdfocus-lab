@@ -1,6 +1,6 @@
 const IDENTIFY_CONFIG = {
-    // 改用點 "." 當作強烈視覺像素，強迫逐行換行，徹底拉開空間
-    PROMPT: '9x9 Sudoku grid OCR. Scan strictly row by row, top to bottom. Output EXACTLY 9 lines. Each line MUST contain exactly 9 characters including numbers and dots. For any empty cell, output a dot "." (do not use spaces or underscores). End each line with a newline (\\n). No words, no markdown blocks, just the 9x9 text block.',
+    // 拋棄純數字思考，逼它直接輸出帶有固定分隔符的文字方塊（Text Block）
+    PROMPT: '9x9 Sudoku OCR. Output ONLY 9 lines. Each line must represent one row. For any clear digit, output that digit. For any empty cell, you MUST output a dot "." (do NOT use spaces). Each line must end with a newline. Absolutely no markdown blocks, no words. Example line format: 7.912345. (must have exactly 9 characters per line including dots).',
 
     MODEL: "gemini-3.1-flash-lite",
 
