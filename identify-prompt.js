@@ -6,6 +6,6 @@ const IDENTIFY_CONFIG = {
     GENERATION: {
         temperature: 0,
         topP: 1,
-        maxOutputTokens: 100 // 保持極低Token消耗
+        maxOutputTokens: 120 // 保持極低Token消耗
     }
 };
