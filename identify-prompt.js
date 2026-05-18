@@ -1,11 +1,11 @@
 const IDENTIFY_CONFIG = {
-    PROMPT: 'OCR ONLY the center 9x9 matrix. IGNORE all French text outside. Output 81 digits. Empty=0. [Grid]: 9x9. Each row MUST be EXACTLY 9 chars. [Border Lock]: Rows 2,3,4,6,7,8: 1st and 9th chars CANNOT be 0; lock them to the printed digits on the borders. Count intermediate 0s strictly to bridge borders. No spaces, no wrappers.',
+    PROMPT: '9x9 grid OCR. Output 9 rows. Each row MUST contain EXACTLY 9 digits, ending with a newline (\\n). Empty=0. [Matrix]: Scan strictly top-to-bottom. Row1/5/9 are sequential 1-9 series. Rows 2,3,4,6,7,8 must lock the visible printed digits at the exact first and last columns. No spaces, no extra text.',
 
     MODEL: "gemini-3.1-flash-lite",
 
     GENERATION: {
         temperature: 0,
         topP: 1,
-        maxOutputTokens: 120 // 稍微放寬到 120，給大圖留下一點自迴歸解碼的尾巴緩衝空間
+        maxOutputTokens: 150 // 給換行符號留點空間
     }
 };
