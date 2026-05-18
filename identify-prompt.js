@@ -1,11 +1,11 @@
 const IDENTIFY_CONFIG = {
-    PROMPT: '9x9 grid OCR. Output ONLY 81 digits. Empty=0. [Grid]: 9 rows, 9 cols. Scan top-to-bottom, left-to-right. Each row MUST have EXACTLY 9 digits. [Align]: Col(N) of Row(2-9) MUST vertically align with Col(N) of Row(1). Count blanks strictly to maintain vertical matrix lines. [Constraint]: Row uniqueness (1-9). If duplication occurs, favor printed digit or force blank to 0. No wrapper, no text, no spaces.',
+    PROMPT: '9x9 grid OCR. Output ONLY 81 digits, no spaces. Empty=0. [Grid]: 9 rows, 9 cols. Scan strictly top-to-bottom. Each row MUST contain EXACTLY 9 characters. [Border Lock]: For Rows 2,3,4,6,7,8, the 1st character and the 9th character MUST be the printed digits visible on the left/right edges (Do NOT output 0 for borders). Count intermediate empty cells as 0 to fit exactly between these two border digits. No explanation, just 81 digits.',
 
     MODEL: "gemini-3.1-flash-lite",
 
     GENERATION: {
         temperature: 0,
         topP: 1,
-        maxOutputTokens: 100 // 既然它被壓縮到極致且只能直出81碼，100 Token 空間就絕對夠用，不會講廢話
+        maxOutputTokens: 100 // 保持極低Token消耗
     }
 };
