@@ -43,6 +43,6 @@ OUTPUT EXACTLY 81 DIGITS IN A SINGLE CONTINUOUS STRING (0-9).
     GENERATION: {
         temperature: 0,
         topP: 1,
-        maxOutputTokens: 100 // 限制只能輸出極短內容，逼它闭嘴
+        maxOutputTokens: 160 // 限制只能輸出極短內容，逼它闭嘴
     }
 };
