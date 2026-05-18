@@ -1,11 +1,11 @@
 const IDENTIFY_CONFIG = {
-    PROMPT: 'Focus strictly on the 9x9 cell grid. Extract the 81-digit Sudoku string from the main 9x9 grid. Completely ignore any text outside the border. Treat any empty cell as 0, ignoring highlights or shadows. [GRID_STRUCTURE]: Scan strictly row by row, from top to bottom. Each row must contain EXACTLY 9 digits. [ALIGNMENT_RULE]: To prevent horizontal shifting, alignment is key—the N-th digit of the current row must align perfectly with the vertical column of the N-th digit of the first row. Count the blank spaces (0s) carefully to match this 9x9 vertical alignment. [LOGIC_CONSTRAINT]: For each row, every non-zero digit (1-9) must appear exactly once. If a cell is uncertain, favor the clear printed digit or treat the true blank as 0. Ensure the final output contains ONLY the 81 digits with absolutely no other text.',
+    PROMPT: '9x9 grid OCR. Output ONLY 81 digits. Empty=0. [Grid]: 9 rows, 9 cols. Scan top-to-bottom, left-to-right. Each row MUST have EXACTLY 9 digits. [Align]: Col(N) of Row(2-9) MUST vertically align with Col(N) of Row(1). Count blanks strictly to maintain vertical matrix lines. [Constraint]: Row uniqueness (1-9). If duplication occurs, favor printed digit or force blank to 0. No wrapper, no text, no spaces.',
 
     MODEL: "gemini-3.1-flash-lite",
 
     GENERATION: {
         temperature: 0,
         topP: 1,
-        maxOutputTokens: 300 
+        maxOutputTokens: 100 // 既然它被壓縮到極致且只能直出81碼，100 Token 空間就絕對夠用，不會講廢話
     }
 };
