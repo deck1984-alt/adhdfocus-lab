@@ -1,48 +1,11 @@
 const IDENTIFY_CONFIG = {
-    PROMPT: `[SYSTEM_INIT: SUDOKU_GRID_PARSER_V2.2]
-[OBJECTIVE: MAP_PIXELS_TO_COORDINATES]
-
-{
-  "STRICT_MODE": "TRUE",
-  "EMPTY_CELL": "0",
-  "GRID_DIM": "9x9",
-  "CELL_MAP": {
-    "R[1-9]C[1-9]": "SCAN_ORDER_TOP_TO_BOTTOM_LEFT_TO_RIGHT"
-  }
-}
-
-### 1. GEOMETRIC_ANCHORING
-FOR EACH (cell IN grid) {
-  X_AXIS = DEFINE_NINE_COLUMN_SLOTS(GRID_WIDTH / 9);
-  Y_AXIS = DEFINE_NINE_ROW_SLOTS(GRID_HEIGHT / 9);
-  LOCK_COORDINATE(cell.R, cell.C);
-}
-[NOISE_FILTER]: IGNORE ALL TEXT, BORDERS, OR GRAPHICS OUTSIDE THE MAIN 9x9 GRID.
-
-### 2. COORDINATE_DRIVEN_OCR (R-C MAPPING)
-DO NOT EXTRACT BY VISUAL FLOW. EXTRACT BY SLOT ADDRESS SPECIFICALLY:
-R1C1-R1C9, R2C1-R2C9, R3C1-R3C9, R4C1-R4C9, R5C1-R5C9, R6C1-R6C9, R7C1-R7C9, R8C1-R8C9, R9C1-R9C9.
-
-[CRITICAL_LOGIC]: IF (Slot(RnCn) == NULL || BACKGROUND_ONLY) RETURN "0".
-[COLOR_BYPASS]: IGNORE HEX(#3b5998), IGNORE HEX(#ffffff20), IGNORE NEWSPAPER_GREY.
-
-### 3. BLOCK_INTEGRITY_LOOP
-VERIFY_BLOCK(B1-B9) {
-  DATA_STRUCTURE: 3x3_ARRAY;
-  VALIDATE: UNIQUENESS_CHECK_PER_ROW_COL_BLOCK;
-}
-
-### 4. OUTPUT_FORMAT
-[CRITICAL]: DO NOT OUTPUT ANY COORDINATES, LABELS, EXPLANATIONS, OR MARKDOWN.
-OUTPUT EXACTLY 81 DIGITS IN A SINGLE CONTINUOUS STRING (0-9).
-
-[EXECUTE_NOW]`,
+    PROMPT: 'Extract the 81-digit Sudoku string from the main 9x9 grid. Completely ignore any text, newspaper titles, or handwriting outside the grid border. Treat any empty cell as 0, completely ignoring its background color, shadows, highlights, or selection borders. Ensure the final output contains ONLY the 81 digits with absolutely no other text, labels, or explanations.',
 
     MODEL: "gemini-3.1-flash-lite",
 
     GENERATION: {
         temperature: 0,
         topP: 1,
-        maxOutputTokens: 160 // 限制只能輸出極短內容，逼它闭嘴
+        maxOutputTokens: 160 // 保持你最舒服的偶數設定，給予足夠的 81 碼輸出空間
     }
 };
