@@ -66,5 +66,3 @@ IF (DUPLICATE_FOUND_IN_ROW_OR_COL) {
         maxOutputTokens: 250 // 微調增加 50 tokens 容納 XML 標籤
     },
 };
-
-export default IDENTIFY_CONFIG;
