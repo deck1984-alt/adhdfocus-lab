@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>QR-CODE產生器 v1.17</title>
+    <title>QR-CODE產生器 v1.18</title>
     <script src="https://unpkg.com/qr-code-styling@1.5.0/lib/qr-code-styling.js"></script>
     <style>
         :root { 
@@ -322,13 +322,13 @@
                     ctx.letterSpacing = "2px";
 
                     // 繪製頂部文字 (ADHDFocus LAB)
-                    ctx.fillText("ADHDFocus LAB", 160, 30);
+                    ctx.fillText("ADHDFocus LAB", 160, 15);
 
-                    // 將 QR Code 貼入中央位置 (向下平移至 y=50)
+                    // 將 QR Code 貼入中央位置 (向下平移至 y=20)
                     ctx.drawImage(image, 20, 20, 280, 280);
 
                     // 繪製底部文字 (CHALLENGE ACCEPTED)
-                    ctx.fillText("CHALLENGE ACCEPTED", 160, 310);
+                    ctx.fillText("CHALLENGE ACCEPTED", 160, 305);
 
                     // 匯出下載
                     const downloadLink = document.createElement("a");
