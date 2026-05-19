@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>QR-CODE產生器 v1.23</title>
+    <title>QR-CODE產生器 v1.24</title>
     <script src="https://unpkg.com/qr-code-styling@1.5.0/lib/qr-code-styling.js"></script>
     <style>
         :root { 
@@ -134,7 +134,7 @@
 <body>
 
 <div class="container">
-    <h2>QR-CODE產生器 1.23</h2>
+    <h2>QR-CODE產生器 1.24</h2>
     
     <span class="label-text">輸入 Key 或特定識別碼：</span>
     <input type="text" id="apiKeyInput" placeholder="在此輸入 Key 或識別碼">
@@ -324,10 +324,10 @@
                     // 繪製頂部文字 (ADHDFocus LAB)
                     ctx.fillText("ADHDFocus LAB", 160, 30);
 
-                    // 將 QR Code 貼入中央位置 (向下平移至 y=20)
-                    ctx.drawImage(image, 20, 30, 280, 280);
+                    // 將 QR Code 貼入中央位置 (向下平移至 y=28)
+                    ctx.drawImage(image, 20, 28, 280, 280);
 
-                    // 繪製底部文字 (CHALLENGE ACCEPTED)
+                  // 繪製底部文字 (CHALLENGE ACCEPTED)
                     ctx.fillText("CHALLENGE ACCEPTED", 160, 310);
 
                     // 匯出下載
