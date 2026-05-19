@@ -94,7 +94,7 @@
 <body>
 
 <div class="container">
-    <h2>QR-CODE產生器</h2>
+    <h2>QR-CODE產生器 1.0</h2>
     
     <span class="label-text">輸入 Key 或特定識別碼：</span>
     <input type="text" id="apiKeyInput" placeholder="在此輸入 Key 或識別碼">
@@ -116,115 +116,7 @@
 <script>
     const apiKeyInput = document.getElementById('apiKeyInput');
     
-    localStorage.getItem('sudoku_input_val') || '';
-
-    document.getElementById('scanBtn').onclick = async function() {
-        const fileInput = document.getElementById('imageInput');
-        const status = document.getElementById('status');
-        const btn = this;
-
-        const inputVal = apiKeyInput.value.trim();
-        let finalApiKey = "";
-
-        if (inputVal === API_CONFIG.DEBUG_MODE_TRIGGER) {
-            finalApiKey = API_CONFIG.GEMINI_KEY;
-            status.style.color = "var(--info-color)";
-            status.innerText = "已啟用內部授權模式...";
-        } else {
-            finalApiKey = inputVal;
-        }
-
-        if (!finalApiKey || finalApiKey.length < 10) {
-            alert('請輸入有效的 API Key 或識別碼');
-            return;
-        }
-        if (fileInput.files.length === 0) {
-            alert('請選擇圖片');
-            return;
-        }
-
-        localStorage.setItem('sudoku_input_val', inputVal);
-        
-        btn.disabled = true;
-        
-        try {
-            const file = fileInput.files[0];
-            
-            const base64Data = await new Promise((resolve) => {
-                const reader = new FileReader();
-                reader.onload = (e) => {
-                    const img = new Image();
-                    img.onload = () => {
-                        const canvas = document.createElement('canvas');
-                        const max_size = 1024; 
-                        let width = img.width, height = img.height;
-                        if (width > height) { if (width > max_size) { height *= max_size / width; width = max_size; } }
-                        else { if (height > max_size) { width *= max_size / height; height = max_size; } }
-                        canvas.width = width; canvas.height = height;
-                        canvas.getContext('2d').drawImage(img, 0, 0, width, height);
-                        resolve(canvas.toDataURL('image/jpeg', 0.8).split(',')[1]);
-                    };
-                    img.src = e.target.result;
-                };
-                reader.readAsDataURL(file);
-            });
-
-            status.innerText = "正在傳送至 AI 辨識中...";
-            status.style.color = "var(--text-dark)";
-
-            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${IDENTIFY_CONFIG.MODEL}:generateContent?key=${finalApiKey}`;
-
-            const response = await fetch(apiUrl, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    contents: [{
-                        parts: [
-                            { text: IDENTIFY_CONFIG.PROMPT },
-                            { inline_data: { mime_type: "image/jpeg", data: base64Data } }
-                        ]
-                    }],
-                    generationConfig: IDENTIFY_CONFIG.GENERATION
-                })
-            });
-
-            const data = await response.json();
-            
-            if (response.status === 429) throw new Error("額度耗盡，請等候 15 秒再試。");
-            if (data.error) throw new Error(data.error.message);
-
-            const result = data.candidates[0].content.parts[0].text.replace(/[^0-9]/g, '').slice(0, 81);
-            
-            if (result.length < 81) throw new Error(IDENTIFY_CONFIG.PROMPT+"\n辨識不足 81 碼，請重拍或保持圖片清晰。\n"+ result);
-
-            status.innerText = "辨識成功！正在生成 QR Code...";
-
-// 1. 產生目標網址
-const targetUrl = `https://deck1984-alt.github.io/adhdfocus-lab/index.html?puzzle=${result}`;
-
-// 2. 設定 QuickChart QR Code 的參數（仿照你提供的樣式）
-const qrUrl = `https://quickchart.io/qr?text=${encodeURIComponent(targetUrl)}&width=300&height=300&dark=ffffff&light=000000&ecLevel=Q&centerImageUrl=${encodeURIComponent('https://i.imgur.com/xO796rD.png')}`;
-
-const qrUrl = `https://quickchart.io/qr?config=${encodeURIComponent(JSON.stringify(qrConfig))}`;
-
-// 3. 將 QR Code 顯示在畫面上，並提供下載連結
-status.innerHTML = `
-    <div style="margin-top: 20px;">
-        <p style="color: #4caf50; font-weight: bold;">QR Code 生成成功！</p>
-        <img src="${qrUrl}" alt="Sudoku QR Code" style="border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.2); max-width: 100%;">
-        <br>
-        <a href="${qrUrl}" download="sudoku_qr.png" target="_blank" style="display: inline-block; margin-top: 10px; color: var(--info-color); text-decoration: none; font-size: 14px;">點此在新分頁打開 / 下載 QR Code</a>
-    </div>
-`;
-btn.disabled = false; // 讓按鈕恢復，以便掃描下一張
-
-
-        } catch (err) {
-            status.innerText = "錯誤: " + err.message;
-            status.style.color = "var(--error-color)";
-            btn.disabled = false;
-        }
-    };
-</script>
-</body>
-</html>
+    // 預載入先前儲存的數值
+    const savedVal = localStorage.getItem('sudoku_input_val') || '';
+    if (savedVal) {
+        apiKeyInput.value = savedVal;
