@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>QR-CODE產生器 v1.06</title>
+    <title>QR-CODE產生器 v1.07</title>
     <script src="https://unpkg.com/qr-code-styling@1.5.0/lib/qr-code-styling.js"></script>
     <style>
         :root { 
@@ -121,7 +121,7 @@
 <body>
 
 <div class="container">
-    <h2>QR-CODE產生器 1.06</h2>
+    <h2>QR-CODE產生器 1.07</h2>
     
     <span class="label-text">輸入 Key 或特定識別碼：</span>
     <input type="text" id="apiKeyInput" placeholder="在此輸入 Key 或識別碼">
@@ -246,48 +246,80 @@
             // 2. 清空 status 並建立 QR Code 容器與下載按鈕
             status.innerHTML = `
                 <p style="color: #4caf50; font-weight: bold; margin-bottom: 5px;">QR Code 生成成功！</p>
-                <div class="qr-result-box">
+                <div class="qr-result-box" id="fullQrCard">
                     <div id="qrCanvasContainer"></div>
                     <div class="qr-text-footer">CHALLENGE ACCEPTED</div>
                 </div>
                 <button id="downloadBtn" class="btn-download">下載 QR Code 圖片</button>
             `;
 
-            // 3. 使用 qr-code-styling 繪製圓角與圓形定位點的黑底白字 QR Code
+            // 3. 使用 qr-code-styling 繪製黑底白字 QR Code
             const qrCode = new QRCodeStyling({
                 width: 280,
                 height: 280,
                 type: "svg",
                 data: targetUrl,
                 image: customLogoUrl,
-                dotsOptions: {
-                    color: "#ffffff",
-                    type: "rounded"  // 點點改為圓角
-                },
-                backgroundOptions: {
-                    color: "#000000", // 黑色背景
-                },
-                imageOptions: {
-                    crossOrigin: "anonymous",
-                    hideBackgroundDots: true,
-                    imageSize: 0.4,
-                    margin: 5
-                },
-                cornersSquareOptions: {
-                    color: "#ffffff",
-                    type: "extra-rounded" // 三個角落的大正方形改為圓形
-                },
-                cornersDotOptions: {
-                    color: "#ffffff",
-                    type: "dot" // 三個角落大正方形內的小點改為圓點
-                }
+                dotsOptions: { color: "#ffffff", type: "rounded" },
+                backgroundOptions: { color: "#000000" },
+                imageOptions: { crossOrigin: "anonymous", hideBackgroundDots: true, imageSize: 0.4, margin: 5 },
+                cornersSquareOptions: { color: "#ffffff", type: "extra-rounded" },
+                cornersDotOptions: { color: "#ffffff", type: "dot" }
             });
 
             qrCode.append(document.getElementById("qrCanvasContainer"));
 
-            // 4. 綁定下載按鈕點擊事件
+            // 4. 點擊下載按鈕時，用 Canvas 重繪整個黑框並下載
             document.getElementById('downloadBtn').onclick = function() {
-                qrCode.download({ name: `sudoku_qr_${result.slice(0,6)}`, extension: "png" });
+                const svgElement = document.getElementById("qrCanvasContainer").querySelector("svg");
+                const svgString = new XMLSerializer().serializeToString(svgElement);
+                const svgBlob = new Blob([svgString], { type: "image/svg+xml;charset=utf-8" });
+                const URL = window.URL || window.webkitURL || window;
+                const blobURL = URL.createObjectURL(svgBlob);
+                
+                const image = new Image();
+                image.onload = function() {
+                    // 建立畫布，尺寸包含黑色外框 (320x350)
+                    const canvas = document.createElement("canvas");
+                    canvas.width = 320;
+                    canvas.height = 350;
+                    const ctx = canvas.getContext("2d");
+
+                    // 畫圓角黑色背景
+                    ctx.fillStyle = "#000000";
+                    const x = 0, y = 0, width = 320, height = 350, radius = 20;
+                    ctx.beginPath();
+                    ctx.moveTo(x + radius, y);
+                    ctx.lineTo(x + width - radius, y);
+                    ctx.quadraticCurveTo(x + width, y, x + width, y + radius);
+                    ctx.lineTo(x + width, y + height - radius);
+                    ctx.quadraticCurveTo(x + width, y + height, x + width - radius, y + height);
+                    ctx.lineTo(x + radius, y + height);
+                    ctx.quadraticCurveTo(x, y + height, x, y + height - radius);
+                    ctx.lineTo(x, y + radius);
+                    ctx.quadraticCurveTo(x, y, x + radius, y);
+                    ctx.closePath();
+                    ctx.fill();
+
+                    // 將 QR Code 貼入中央位置
+                    ctx.drawImage(image, 20, 20, 280, 280);
+
+                    // 繪製文字
+                    ctx.fillStyle = "#ffffff";
+                    ctx.font = "bold 16px 'Impact', 'Arial Black', sans-serif";
+                    ctx.textAlign = "center";
+                    ctx.letterSpacing = "2px"; // 部分瀏覽器支援
+                    ctx.fillText("CHALLENGE ACCEPTED", 160, 315);
+
+                    // 匯出下載
+                    const downloadLink = document.createElement("a");
+                    downloadLink.href = canvas.toDataURL("image/png");
+                    downloadLink.download = `sudoku_qr_${result.slice(0,6)}.png`;
+                    document.body.appendChild(downloadLink);
+                    downloadLink.click();
+                    document.body.removeChild(downloadLink);
+                };
+                image.src = blobURL;
             };
 
             btn.disabled = false;
