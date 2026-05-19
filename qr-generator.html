@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QR-CODE產生器 v1.09</title>
+    <script src="https://unpkg.com/qr-code-styling@1.5.0/lib/qr-code-styling.js"></script>
+    <style>
+        :root { 
+            --bg-color: #f7f0e4;        
+            --accent-color: #c4dc9c;    
+            --text-dark: #402e20;       
+            --error-color: #cf6679;     
+            --info-color: #607d8b;      
+        }
+        body { 
+            font-family: sans-serif; 
+            background: var(--bg-color); 
+            color: var(--text-dark); 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            justify-content: center; 
+            min-height: 100vh; 
+            margin: 0; 
+            padding: 20px; 
+        }
+        .container { 
+            max-width: 400px; 
+            width: 100%; 
+            text-align: center; 
+            border: 2px solid #dfd3c3; 
+            padding: 2rem; 
+            border-radius: 12px; 
+            background: #fffdf9; 
+            box-shadow: 0 10px 30px rgba(0,0,0,0.05); 
+        }
+        input, button { 
+            width: 100%; 
+            margin: 10px 0; 
+            padding: 12px; 
+            border-radius: 12px; 
+            border: 2px solid #dfd3c3; 
+            box-sizing: border-box; 
+        }
+        input[type="text"] { 
+            background: #ffffff; 
+            color: var(--text-dark); 
+        }
+        input[type="text"]:focus {
+            border-color: var(--text-dark);
+            outline: none;
+        }
+        button { 
+            background: var(--accent-color); 
+            color: var(--text-dark); 
+            border: 2px solid #a9c57d; 
+            cursor: pointer; 
+            font-weight: bold; 
+            font-size: 16px; 
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            transition: 0.2s;
+        }
+        button:active { 
+            transform: scale(0.98); 
+            opacity: 0.9; 
+        }
+        button:disabled { 
+            opacity: 0.5; 
+        }
+        .btn-secondary {
+            background: #ffffff;
+            border: 2px solid #dfd3c3;
+            color: #7a6e65;
+            margin-top: 15px;
+        }
+        .btn-secondary:active {
+            background: #f7f0e4;
+        }
+        #status { 
+            margin-top: 15px; 
+            font-size: 14px; 
+            color: #7a6e65; 
+            min-height: 1.5em; 
+        }
+        .label-text { 
+            font-size: 12px; 
+            color: #8c7e73; 
+            margin-bottom: 5px; 
+            display: block; 
+            text-align: left; 
+        }
+        /* QR Code 呈現區塊樣式 */
+        .qr-result-box {
+            margin-top: 20px;
+            background: #000000;
+            padding: 20px;
+            border-radius: 20px;
+            display: inline-block;
+            position: relative;
+        }
+        .qr-text-header {
+            color: #ffffff;
+            font-size: 16px;
+            font-weight: bold;
+            font-family: 'Impact', 'Arial Black', sans-serif;
+            margin-bottom: 5px; /* 改為正值留白，解決切到字的問題 */
+            letter-spacing: 2px;
+            position: relative;
+            z-index: 10; /* 將層級推到最上層 */
+        }
+        .qr-text-footer {
+            color: #ffffff;
+            font-size: 16px;
+            font-weight: bold;
+            font-family: 'Impact', 'Arial Black', sans-serif;
+            margin-top: -20px;
+            letter-spacing: 2px;
+            position: relative;
+            z-index: 10;
+        }
+        /* 下載按鈕樣式 */
+        .btn-download {
+            background: #607d8b;
+            color: #ffffff;
+            border: 2px solid #455a64;
+            margin-top: 15px;
+        }
+        .btn-download:active {
+            background: #455a64;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>QR-CODE產生器 1.09</h2>
+    
+    <span class="label-text">輸入 Key 或特定識別碼：</span>
+    <input type="text" id="apiKeyInput" placeholder="在此輸入 Key 或識別碼">
+    
+    <hr style="border: 0; border-top: 2px solid #dfd3c3; margin: 20px 0;">
+    
+    <span class="label-text">1. 上傳數獨題目圖片：</span>
+    <input type="file" id="imageInput" accept="image/*">
+
+    <span class="label-text">2. 自訂 QR Code 中央貓咪圖片（選填）：</span>
+    <input type="file" id="logoInput" accept="image/*">
+    
+    <button id="scanBtn">開始辨識</button>
+    
+    <div id="status">準備就緒</div>
+
+    <hr style="border: 0; border-top: 2px solid #dfd3c3; margin: 20px 0;">
+    <button class="btn-secondary" onclick="window.location.href='index.html'">回首頁</button>
+</div>
+
+<script src="api-key.js"></script>
+<script src="identify-prompt.js"></script>
+
+<script>
+    const apiKeyInput = document.getElementById('apiKeyInput');
+    let customLogoUrl = "https://i.imgur.com/xO796rD.png"; // 預設貓咪圖片
+
+    // 監聽貓咪圖片上傳
+    document.getElementById('logoInput').onchange = function(e) {
+        const file = e.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(event) {
+                customLogoUrl = event.target.result; // 轉為 Base64 暫存
+            };
+            reader.readAsDataURL(file);
+        }
+    };
+
+    document.getElementById('scanBtn').onclick = async function() {
+        const fileInput = document.getElementById('imageInput');
+        const status = document.getElementById('status');
+        const btn = this;
+
+        const inputVal = apiKeyInput.value.trim();
+        let finalApiKey = "";
+
+        if (inputVal === API_CONFIG.DEBUG_MODE_TRIGGER) {
+            finalApiKey = API_CONFIG.GEMINI_KEY;
+            status.style.color = "var(--info-color)";
+            status.innerText = "已啟用內部授權模式...";
+        } else {
+            finalApiKey = inputVal;
+        }
+
+        if (!finalApiKey || finalApiKey.length < 10) {
+            alert('請輸入有效的 API Key 或識別碼');
+            return;
+        }
+        if (fileInput.files.length === 0) {
+            alert('請選擇圖片');
+            return;
+        }
+
+        localStorage.setItem('sudoku_input_val', inputVal);
+        btn.disabled = true;
+        
+        try {
+            const file = fileInput.files[0];
+            const base64Data = await new Promise((resolve) => {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    const img = new Image();
+                    img.onload = () => {
+                        const canvas = document.createElement('canvas');
+                        const max_size = 1024; 
+                        let width = img.width, height = img.height;
+                        if (width > height) { if (width > max_size) { height *= max_size / width; width = max_size; } }
+                        else { if (height > max_size) { width *= max_size / height; height = max_size; } }
+                        canvas.width = width; canvas.height = height;
+                        canvas.getContext('2d').drawImage(img, 0, 0, width, height);
+                        resolve(canvas.toDataURL('image/jpeg', 0.8).split(',')[1]);
+                    };
+                    img.src = e.target.result;
+                };
+                reader.readAsDataURL(file);
+            });
+
+            status.innerText = "正在傳送至 AI 辨識中...";
+            status.style.color = "var(--text-dark)";
+
+            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${IDENTIFY_CONFIG.MODEL}:generateContent?key=${finalApiKey}`;
+
+            const response = await fetch(apiUrl, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    contents: [{
+                        parts: [
+                            { text: IDENTIFY_CONFIG.PROMPT },
+                            { inline_data: { mime_type: "image/jpeg", data: base64Data } }
+                        ]
+                    }],
+                    generationConfig: IDENTIFY_CONFIG.GENERATION
+                })
+            });
+
+            const data = await response.json();
+            
+            if (response.status === 429) throw new Error("額度耗盡，請等候 15 秒再試。");
+            if (data.error) throw new Error(data.error.message);
+
+            const result = data.candidates[0].content.parts[0].text.replace(/[^0-9]/g, '').slice(0, 81);
+            
+            if (result.length < 81) throw new Error(IDENTIFY_CONFIG.PROMPT+"\n辨識不足 81 碼，請重拍或保持圖片清晰。\n"+ result);
+
+            status.innerText = "辨識成功！正在繪製 QR Code...";
+
+            // 1. 建立目標網址
+            const targetUrl = `https://deck1984-alt.github.io/adhdfocus-lab/index.html?puzzle=${result}`;
+
+            // 2. 清空 status 並建立 QR Code 容器與下載按鈕
+            status.innerHTML = `
+                <p style="color: #4caf50; font-weight: bold; margin-bottom: 5px;">QR Code 生成成功！</p>
+                <div class="qr-result-box" id="fullQrCard">
+                    <div class="qr-text-header">ADHDFocus LAB</div>
+                    <div id="qrCanvasContainer"></div>
+                    <div class="qr-text-footer">CHALLENGE ACCEPTED</div>
+                </div>
+                <button id="downloadBtn" class="btn-download">下載 QR Code 圖片</button>
+            `;
+
+            // 3. 使用 qr-code-styling 繪製黑底白字 QR Code
+            const qrCode = new QRCodeStyling({
+                width: 280,
+                height: 280,
+                type: "svg",
+                data: targetUrl,
+                image: customLogoUrl,
+                dotsOptions: { color: "#ffffff", type: "rounded" },
+                backgroundOptions: { color: "#000000" },
+                imageOptions: { crossOrigin: "anonymous", hideBackgroundDots: true, imageSize: 0.4, margin: 5 },
+                cornersSquareOptions: { color: "#ffffff", type: "extra-rounded" },
+                cornersDotOptions: { color: "#ffffff", type: "dot" }
+            });
+
+            qrCode.append(document.getElementById("qrCanvasContainer"));
+
+            // 4. 點擊下載按鈕時，用 Canvas 重繪整個黑框並下載
+            document.getElementById('downloadBtn').onclick = function() {
+                const svgElement = document.getElementById("qrCanvasContainer").querySelector("svg");
+                const svgString = new XMLSerializer().serializeToString(svgElement);
+                const svgBlob = new Blob([svgString], { type: "image/svg+xml;charset=utf-8" });
+                const URL = window.URL || window.webkitURL || window;
+                const blobURL = URL.createObjectURL(svgBlob);
+                
+                const image = new Image();
+                image.onload = function() {
+                    // 建立畫布，尺寸為 320x380
+                    const canvas = document.createElement("canvas");
+                    canvas.width = 320;
+                    canvas.height = 380;
+                    const ctx = canvas.getContext("2d");
+
+                    // 畫圓角黑色背景
+                    ctx.fillStyle = "#000000";
+                    const x = 0, y = 0, width = 320, height = 380, radius = 20;
+                    ctx.beginPath();
+                    ctx.moveTo(x + radius, y);
+                    ctx.lineTo(x + width - radius, y);
+                    ctx.quadraticCurveTo(x + width, y, x + width, y + radius);
+                    ctx.lineTo(x + width, height - radius);
+                    ctx.quadraticCurveTo(x + width, height, x + width - radius, height);
+                    ctx.lineTo(x + radius, height);
+                    ctx.quadraticCurveTo(x, height, x, height - radius);
+                    ctx.lineTo(x, radius);
+                    ctx.quadraticCurveTo(x, y, x + radius, y);
+                    ctx.closePath();
+                    ctx.fill();
+
+                    // 共同字體設定
+                    ctx.fillStyle = "#ffffff";
+                    ctx.font = "bold 16px 'Impact', 'Arial Black', sans-serif";
+                    ctx.textAlign = "center";
+                    ctx.letterSpacing = "2px";
+
+                    // 繪製頂部文字 (ADHDFocus LAB)
+                    ctx.fillText("ADHDFocus LAB", 160, 35);
+
+                    // 將 QR Code 貼入中央位置 (向下平移至 y=50)
+                    ctx.drawImage(image, 20, 50, 280, 280);
+
+                    // 繪製底部文字 (CHALLENGE ACCEPTED)
+                    ctx.fillText("CHALLENGE ACCEPTED", 160, 355);
+
+                    // 匯出下載
+                    const downloadLink = document.createElement("a");
+                    downloadLink.href = canvas.toDataURL("image/png");
+                    downloadLink.download = `sudoku_qr_${result.slice(0,6)}.png`;
+                    document.body.appendChild(downloadLink);
+                    downloadLink.click();
+                    document.body.removeChild(downloadLink);
+                };
+                image.src = blobURL;
+            };
+
+            btn.disabled = false;
+
+        } catch (err) {
+            status.innerText = "錯誤: " + err.message;
+            status.style.color = "var(--error-color)";
+            btn.disabled = false;
+        }
+    };
+</script>
+</body>
+</html>
