@@ -94,7 +94,7 @@
 <body>
 
 <div class="container">
-    <h2>數獨題目再生器</h2>
+    <h2>QR-CODE產生器</h2>
     
     <span class="label-text">輸入 Key 或特定識別碼：</span>
     <input type="text" id="apiKeyInput" placeholder="在此輸入 Key 或識別碼">
@@ -200,19 +200,10 @@
             status.innerText = "辨識成功！正在生成 QR Code...";
 
 // 1. 產生目標網址
-const targetUrl = `${window.location.origin}${window.location.pathname.replace('identify.html', 'index.html')}?puzzle=${result}`;
+const targetUrl = `https://deck1984-alt.github.io/adhdfocus-lab/index.html?puzzle=${result}`;
 
 // 2. 設定 QuickChart QR Code 的參數（仿照你提供的樣式）
-const qrConfig = {
-    text: targetUrl,
-    width: 300,
-    height: 300,
-    dark: "ffffff",          // 白色條碼
-    light: "000000",         // 黑色背景
-    ecLevel: "Q",            // 提高容錯率，讓中間放圖不影響讀取
-    quietZone: 20,           // 外圍留白邊框
-    centerImageUrl: "https://i.imgur.com/xO796rD.png" // 這裡放中央貓咪的圖片網址
-};
+const qrUrl = `https://quickchart.io/qr?text=${encodeURIComponent(targetUrl)}&width=300&height=300&dark=ffffff&light=000000&ecLevel=Q&centerImageUrl=${encodeURIComponent('https://i.imgur.com/xO796rD.png')}`;
 
 const qrUrl = `https://quickchart.io/qr?config=${encodeURIComponent(JSON.stringify(qrConfig))}`;
 
