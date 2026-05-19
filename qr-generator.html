@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>QR-CODE產生器 v1.09</title>
+    <title>QR-CODE產生器 v1.10</title>
     <script src="https://unpkg.com/qr-code-styling@1.5.0/lib/qr-code-styling.js"></script>
     <style>
         :root { 
@@ -93,7 +93,7 @@
         /* QR Code 呈現區塊樣式 */
         .qr-result-box {
             margin-top: 20px;
-            background: #000000;
+            background: #FFFFFF;
             padding: 20px;
             border-radius: 20px;
             display: inline-block;
@@ -104,7 +104,7 @@
             font-size: 16px;
             font-weight: bold;
             font-family: 'Impact', 'Arial Black', sans-serif;
-            margin-bottom: 5px; /* 改為正值留白，解決切到字的問題 */
+            margin-bottom: 0px; /* 改為正值留白，解決切到字的問題 */
             letter-spacing: 2px;
             position: relative;
             z-index: 10; /* 將層級推到最上層 */
@@ -134,7 +134,7 @@
 <body>
 
 <div class="container">
-    <h2>QR-CODE產生器 1.09</h2>
+    <h2>QR-CODE產生器 1.10</h2>
     
     <span class="label-text">輸入 Key 或特定識別碼：</span>
     <input type="text" id="apiKeyInput" placeholder="在此輸入 Key 或識別碼">
