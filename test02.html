@@ -3,14 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>數獨題目辨識 v5.3 - ADHDFocusLAB 版</title>
+    <title>QR-CODE產生器 v5.4</title>
     <style>
         :root { 
-            --bg-color: #f7f0e4;        /* 截圖中的淺米色背景 */
-            --accent-color: #c4dc9c;    /* 截圖中的淺綠色 (FAST PENCIL 按鈕) */
-            --text-dark: #402e20;       /* 截圖中的深褐色文字/數字 */
-            --error-color: #cf6679;     /* 保持錯誤提示的紅色 */
-            --info-color: #607d8b;      /* 調整為適合此配色的資訊藍灰色 */
+            --bg-color: #f7f0e4;        /* 淺米色背景 */
+            --accent-color: #c4dc9c;    /* 淺綠色 */
+            --text-dark: #402e20;       /* 深褐色文字 */
+            --error-color: #cf6679;     /* 錯誤紅色 */
+            --info-color: #607d8b;      /* 藍灰色 */
         }
         body { 
             font-family: sans-serif; 
@@ -30,7 +30,7 @@
             text-align: center; 
             border: 2px solid #dfd3c3; 
             padding: 2rem; 
-            border-radius: 12px; 
+            border-radius: 20px;        /* 四個角改大圓角 */
             background: #fffdf9; 
             box-shadow: 0 10px 30px rgba(0,0,0,0.05); 
         }
@@ -38,7 +38,7 @@
             width: 100%; 
             margin: 10px 0; 
             padding: 12px; 
-            border-radius: 12px; 
+            border-radius: 12px;        /* 輸入框與按鈕圓角 */
             border: 2px solid #dfd3c3; 
             box-sizing: border-box; 
         }
@@ -89,25 +89,41 @@
             display: block; 
             text-align: left; 
         }
+        /* Challenge Accepted 字樣樣式 */
+        .challenge-text {
+            font-size: 22px;
+            font-weight: 900;
+            letter-spacing: 1px;
+            color: #2e1f15;
+            margin-top: 25px;
+            text-transform: uppercase;
+        }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <h2>QR-CODE產生器 1.01</h2>
+    <h2>QR-CODE產生器 1.02</h2>
     
     <span class="label-text">輸入 Key 或特定識別碼：</span>
     <input type="text" id="apiKeyInput" placeholder="在此輸入 Key 或識別碼">
     
     <hr style="border: 0; border-top: 2px solid #dfd3c3; margin: 20px 0;">
     
+    <span class="label-text">步驟 1：選擇數獨題目圖片</span>
     <input type="file" id="imageInput" accept="image/*">
+
+    <span class="label-text">步驟 2：上傳中間的貓咪圖（可選）</span>
+    <input type="file" id="catImageInput" accept="image/*">
+    
     <button id="scanBtn">開始辨識</button>
     
     <div id="status">準備就緒</div>
 
     <hr style="border: 0; border-top: 2px solid #dfd3c3; margin: 20px 0;">
     <button class="btn-secondary" onclick="window.location.href='index.html'">回首頁</button>
+    
+    <div class="challenge-text">CHALLENGE ACCEPTED</div>
 </div>
 
 <script src="api-key.js"></script>
@@ -116,14 +132,11 @@
 <script>
     const apiKeyInput = document.getElementById('apiKeyInput');
     
-    // 預先載入紀錄的 Key
-    const savedKey = localStorage.getItem('sudoku_input_val') || '';
-    if (savedKey) {
-        apiKeyInput.value = savedKey;
-    }
+    localStorage.getItem('sudoku_input_val') || '';
 
     document.getElementById('scanBtn').onclick = async function() {
         const fileInput = document.getElementById('imageInput');
+        const catFileInput = document.getElementById('catImageInput');
         const status = document.getElementById('status');
         const btn = this;
 
@@ -173,6 +186,16 @@
                 reader.readAsDataURL(file);
             });
 
+            // 處理自訂貓咪圖片的 Base64 網址（如果有的話）
+            let catImageUrl = "https://i.imgur.com/xO796rD.png"; // 預設貓咪
+            if (catFileInput.files.length > 0) {
+                catImageUrl = await new Promise((resolve) => {
+                    const reader = new FileReader();
+                    reader.onload = (e) => resolve(e.target.result);
+                    reader.readAsDataURL(catFileInput.files[0]);
+                });
+            }
+
             status.innerText = "正在傳送至 AI 辨識中...";
             status.style.color = "var(--text-dark)";
 
@@ -203,20 +226,17 @@
 
             status.innerText = "辨識成功！正在生成 QR Code...";
 
-            // 1. 產生目標網址
             const targetUrl = `https://deck1984-alt.github.io/adhdfocus-lab/index.html?puzzle=${result}`;
 
-            // 2. 設定 QuickChart QR Code 的參數（修正後的標準 Query String 寫法）
-            const catImgUrl = 'https://i.imgur.com/xO796rD.png';
-            const qrUrl = `https://quickchart.io/qr?text=${encodeURIComponent(targetUrl)}&width=300&height=300&dark=ffffff&light=000000&ecLevel=Q&centerImageUrl=${encodeURIComponent(catImgUrl)}&centerImageSize=40`;
+            // 將參數帶入 QuickChart API 串接
+            const qrUrl = `https://quickchart.io/qr?text=${encodeURIComponent(targetUrl)}&width=300&height=300&dark=ffffff&light=000000&ecLevel=Q&centerImageUrl=${encodeURIComponent(catImageUrl)}`;
 
-            // 3. 將 QR Code 顯示在畫面上，並提供下載連結
             status.innerHTML = `
                 <div style="margin-top: 20px;">
-                    <p style="color: #4caf50; font-weight: bold; margin-bottom: 15px;">QR Code 生成成功！</p>
-                    <img src="${qrUrl}" alt="Sudoku QR Code" style="border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.15); max-width: 100%; width: 250px; height: 250px; background: #000;">
+                    <p style="color: #4caf50; font-weight: bold;">QR Code 生成成功！</p>
+                    <img src="${qrUrl}" alt="Sudoku QR Code" style="border-radius: 16px; box-shadow: 0 4px 10px rgba(0,0,0,0.2); max-width: 100%;">
                     <br>
-                    <a href="${qrUrl}" download="sudoku_qr.png" target="_blank" style="display: inline-block; margin-top: 15px; color: var(--info-color); text-decoration: none; font-size: 14px; font-weight: bold;">點此在新分頁打開 / 下載 QR Code</a>
+                    <a href="${qrUrl}" download="sudoku_qr.png" target="_blank" style="display: inline-block; margin-top: 10px; color: var(--info-color); text-decoration: none; font-size: 14px;">點此在新分頁打開 / 下載 QR Code</a>
                 </div>
             `;
             btn.disabled = false;
