@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>QR-CODE產生器 v1.08</title>
+    <title>QR-CODE產生器 v1.09</title>
     <script src="https://unpkg.com/qr-code-styling@1.5.0/lib/qr-code-styling.js"></script>
     <style>
         :root { 
@@ -81,7 +81,7 @@
             margin-top: 15px; 
             font-size: 14px; 
             color: #7a6e65; 
-min-height: 1.5em; 
+            min-height: 1.5em; 
         }
         .label-text { 
             font-size: 12px; 
@@ -97,14 +97,17 @@ min-height: 1.5em;
             padding: 20px;
             border-radius: 20px;
             display: inline-block;
+            position: relative;
         }
         .qr-text-header {
             color: #ffffff;
             font-size: 16px;
             font-weight: bold;
             font-family: 'Impact', 'Arial Black', sans-serif;
-            margin-bottom: -10px;
+            margin-bottom: 5px; /* 改為正值留白，解決切到字的問題 */
             letter-spacing: 2px;
+            position: relative;
+            z-index: 10; /* 將層級推到最上層 */
         }
         .qr-text-footer {
             color: #ffffff;
@@ -113,6 +116,8 @@ min-height: 1.5em;
             font-family: 'Impact', 'Arial Black', sans-serif;
             margin-top: -20px;
             letter-spacing: 2px;
+            position: relative;
+            z-index: 10;
         }
         /* 下載按鈕樣式 */
         .btn-download {
@@ -129,7 +134,7 @@ min-height: 1.5em;
 <body>
 
 <div class="container">
-    <h2>QR-CODE產生器 1.08</h2>
+    <h2>QR-CODE產生器 1.09</h2>
     
     <span class="label-text">輸入 Key 或特定識別碼：</span>
     <input type="text" id="apiKeyInput" placeholder="在此輸入 Key 或識別碼">
@@ -288,7 +293,7 @@ min-height: 1.5em;
                 
                 const image = new Image();
                 image.onload = function() {
-                    // 建立畫布，加高尺寸以包含頂部文字 (320x380)
+                    // 建立畫布，尺寸為 320x380
                     const canvas = document.createElement("canvas");
                     canvas.width = 320;
                     canvas.height = 380;
