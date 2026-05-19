@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>QR-CODE產生器 v1.05</title>
+    <title>QR-CODE產生器 v1.06</title>
     <script src="https://unpkg.com/qr-code-styling@1.5.0/lib/qr-code-styling.js"></script>
     <style>
         :root { 
@@ -103,15 +103,25 @@
             font-size: 16px;
             font-weight: bold;
             font-family: 'Impact', 'Arial Black', sans-serif;
-            margin-top: -10px;
+            margin-top: -20px;
             letter-spacing: 2px;
+        }
+        /* 下載按鈕樣式 */
+        .btn-download {
+            background: #607d8b;
+            color: #ffffff;
+            border: 2px solid #455a64;
+            margin-top: 15px;
+        }
+        .btn-download:active {
+            background: #455a64;
         }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <h2>QR-CODE產生器 1.05</h2>
+    <h2>QR-CODE產生器 1.06</h2>
     
     <span class="label-text">輸入 Key 或特定識別碼：</span>
     <input type="text" id="apiKeyInput" placeholder="在此輸入 Key 或識別碼">
@@ -233,13 +243,14 @@
             // 1. 建立目標網址
             const targetUrl = `https://deck1984-alt.github.io/adhdfocus-lab/index.html?puzzle=${result}`;
 
-            // 2. 清空 status 並建立 QR Code 容器
+            // 2. 清空 status 並建立 QR Code 容器與下載按鈕
             status.innerHTML = `
                 <p style="color: #4caf50; font-weight: bold; margin-bottom: 5px;">QR Code 生成成功！</p>
                 <div class="qr-result-box">
                     <div id="qrCanvasContainer"></div>
                     <div class="qr-text-footer">CHALLENGE ACCEPTED</div>
                 </div>
+                <button id="downloadBtn" class="btn-download">下載 QR Code 圖片</button>
             `;
 
             // 3. 使用 qr-code-styling 繪製圓角與圓形定位點的黑底白字 QR Code
@@ -273,6 +284,12 @@
             });
 
             qrCode.append(document.getElementById("qrCanvasContainer"));
+
+            // 4. 綁定下載按鈕點擊事件
+            document.getElementById('downloadBtn').onclick = function() {
+                qrCode.download({ name: `sudoku_qr_${result.slice(0,6)}`, extension: "png" });
+            };
+
             btn.disabled = false;
 
         } catch (err) {
