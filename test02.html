@@ -3,14 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>QR-CODE產生器 v5.4</title>
+    <title>QR-CODE產生器 v1.03</title>
+    <script src="https://unpkg.com/qr-code-styling@1.5.0/lib/qr-code-styling.js"></script>
     <style>
         :root { 
-            --bg-color: #f7f0e4;        /* 淺米色背景 */
-            --accent-color: #c4dc9c;    /* 淺綠色 */
-            --text-dark: #402e20;       /* 深褐色文字 */
-            --error-color: #cf6679;     /* 錯誤紅色 */
-            --info-color: #607d8b;      /* 藍灰色 */
+            --bg-color: #f7f0e4;        
+            --accent-color: #c4dc9c;    
+            --text-dark: #402e20;       
+            --error-color: #cf6679;     
+            --info-color: #607d8b;      
         }
         body { 
             font-family: sans-serif; 
@@ -30,7 +31,7 @@
             text-align: center; 
             border: 2px solid #dfd3c3; 
             padding: 2rem; 
-            border-radius: 20px;        /* 四個角改大圓角 */
+            border-radius: 12px; 
             background: #fffdf9; 
             box-shadow: 0 10px 30px rgba(0,0,0,0.05); 
         }
@@ -38,7 +39,7 @@
             width: 100%; 
             margin: 10px 0; 
             padding: 12px; 
-            border-radius: 12px;        /* 輸入框與按鈕圓角 */
+            border-radius: 12px; 
             border: 2px solid #dfd3c3; 
             box-sizing: border-box; 
         }
@@ -89,32 +90,39 @@
             display: block; 
             text-align: left; 
         }
-        /* Challenge Accepted 字樣樣式 */
-        .challenge-text {
-            font-size: 22px;
-            font-weight: 900;
-            letter-spacing: 1px;
-            color: #2e1f15;
-            margin-top: 25px;
-            text-transform: uppercase;
+        /* QR Code 呈現區塊樣式 */
+        .qr-result-box {
+            margin-top: 20px;
+            background: #000000;
+            padding: 20px;
+            border-radius: 20px;
+            display: inline-block;
+        }
+        .qr-text-footer {
+            color: #ffffff;
+            font-size: 24px;
+            font-weight: bold;
+            font-family: 'Impact', 'Arial Black', sans-serif;
+            margin-top: 10px;
+            letter-spacing: 2px;
         }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <h2>QR-CODE產生器 1.02</h2>
+    <h2>QR-CODE產生器 1.03</h2>
     
     <span class="label-text">輸入 Key 或特定識別碼：</span>
     <input type="text" id="apiKeyInput" placeholder="在此輸入 Key 或識別碼">
     
     <hr style="border: 0; border-top: 2px solid #dfd3c3; margin: 20px 0;">
     
-    <span class="label-text">步驟 1：選擇數獨題目圖片</span>
+    <span class="label-text">1. 上傳數獨題目圖片：</span>
     <input type="file" id="imageInput" accept="image/*">
 
-    <span class="label-text">步驟 2：上傳中間的貓咪圖（可選）</span>
-    <input type="file" id="catImageInput" accept="image/*">
+    <span class="label-text">2. 自訂 QR Code 中央貓咪圖片（選填）：</span>
+    <input type="file" id="logoInput" accept="image/*">
     
     <button id="scanBtn">開始辨識</button>
     
@@ -122,8 +130,6 @@
 
     <hr style="border: 0; border-top: 2px solid #dfd3c3; margin: 20px 0;">
     <button class="btn-secondary" onclick="window.location.href='index.html'">回首頁</button>
-    
-    <div class="challenge-text">CHALLENGE ACCEPTED</div>
 </div>
 
 <script src="api-key.js"></script>
@@ -131,12 +137,22 @@
 
 <script>
     const apiKeyInput = document.getElementById('apiKeyInput');
-    
-    localStorage.getItem('sudoku_input_val') || '';
+    let customLogoUrl = "https://i.imgur.com/xO796rD.png"; // 預設貓咪圖片
+
+    // 監聽貓咪圖片上傳
+    document.getElementById('logoInput').onchange = function(e) {
+        const file = e.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(event) {
+                customLogoUrl = event.target.result; // 轉為 Base64 暫存
+            };
+            reader.readAsDataURL(file);
+        }
+    };
 
     document.getElementById('scanBtn').onclick = async function() {
         const fileInput = document.getElementById('imageInput');
-        const catFileInput = document.getElementById('catImageInput');
         const status = document.getElementById('status');
         const btn = this;
 
@@ -161,12 +177,10 @@
         }
 
         localStorage.setItem('sudoku_input_val', inputVal);
-        
         btn.disabled = true;
         
         try {
             const file = fileInput.files[0];
-            
             const base64Data = await new Promise((resolve) => {
                 const reader = new FileReader();
                 reader.onload = (e) => {
@@ -185,16 +199,6 @@
                 };
                 reader.readAsDataURL(file);
             });
-
-            // 處理自訂貓咪圖片的 Base64 網址（如果有的話）
-            let catImageUrl = "https://i.imgur.com/xO796rD.png"; // 預設貓咪
-            if (catFileInput.files.length > 0) {
-                catImageUrl = await new Promise((resolve) => {
-                    const reader = new FileReader();
-                    reader.onload = (e) => resolve(e.target.result);
-                    reader.readAsDataURL(catFileInput.files[0]);
-                });
-            }
 
             status.innerText = "正在傳送至 AI 辨識中...";
             status.style.color = "var(--text-dark)";
@@ -224,21 +228,51 @@
             
             if (result.length < 81) throw new Error(IDENTIFY_CONFIG.PROMPT+"\n辨識不足 81 碼，請重拍或保持圖片清晰。\n"+ result);
 
-            status.innerText = "辨識成功！正在生成 QR Code...";
+            status.innerText = "辨識成功！正在繪製 QR Code...";
 
+            // 1. 建立目標網址
             const targetUrl = `https://deck1984-alt.github.io/adhdfocus-lab/index.html?puzzle=${result}`;
 
-            // 將參數帶入 QuickChart API 串接
-            const qrUrl = `https://quickchart.io/qr?text=${encodeURIComponent(targetUrl)}&width=300&height=300&dark=ffffff&light=000000&ecLevel=Q&centerImageUrl=${encodeURIComponent(catImageUrl)}`;
-
+            // 2. 清空 status 並建立 QR Code 容器
             status.innerHTML = `
-                <div style="margin-top: 20px;">
-                    <p style="color: #4caf50; font-weight: bold;">QR Code 生成成功！</p>
-                    <img src="${qrUrl}" alt="Sudoku QR Code" style="border-radius: 16px; box-shadow: 0 4px 10px rgba(0,0,0,0.2); max-width: 100%;">
-                    <br>
-                    <a href="${qrUrl}" download="sudoku_qr.png" target="_blank" style="display: inline-block; margin-top: 10px; color: var(--info-color); text-decoration: none; font-size: 14px;">點此在新分頁打開 / 下載 QR Code</a>
+                <p style="color: #4caf50; font-weight: bold; margin-bottom: 5px;">QR Code 生成成功！</p>
+                <div class="qr-result-box">
+                    <div id="qrCanvasContainer"></div>
+                    <div class="qr-text-footer">CHALLENGE ACCEPTED</div>
                 </div>
             `;
+
+            // 3. 使用 qr-code-styling 繪製圓角與圓形定位點的黑底白字 QR Code
+            const qrCode = new QRCodeStyling({
+                width: 280,
+                height: 280,
+                type: "svg",
+                data: targetUrl,
+                image: customLogoUrl,
+                dotsOptions: {
+                    color: "#ffffff",
+                    type: "rounded"  // 點點改為圓角
+                },
+                backgroundOptions: {
+                    color: "#000000", // 黑色背景
+                },
+                imageOptions: {
+                    crossOrigin: "anonymous",
+                    hideBackgroundDots: true,
+                    imageSize: 0.4,
+                    margin: 5
+                },
+                cornersSquareOptions: {
+                    color: "#ffffff",
+                    type: "extra-rounded" // 三個角落的大正方形改為圓形
+                },
+                cornersDotOptions: {
+                    color: "#ffffff",
+                    type: "dot" // 三個角落大正方形內的小點改為圓點
+                }
+            });
+
+            qrCode.append(document.getElementById("qrCanvasContainer"));
             btn.disabled = false;
 
         } catch (err) {
