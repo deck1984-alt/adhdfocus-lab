@@ -1,6 +1,52 @@
 const IDENTIFY_CONFIG = {
-    // 讓每一行都有英文字母開頭（A-I），強迫它對齊，尾巴補滿 9 個數字（含0）
-    PROMPT: '9x9 Sudoku OCR. Output EXACTLY 9 lines. Row 1 starts with "A", Row 2 starts with "B", up to Row 9 starting with "I". Each letter must be followed by exactly 9 numbers (0 for empty). End with newline. Example: A789123456\\nB300040008\\n... No wrapper, no text.',
+    PROMPT: '[SYSTEM_INIT: SUDOKU_GRID_PARSER_V2.0]
+[OBJECTIVE: MAP_PIXELS_TO_COORDINATES]
+
+{
+  "STRICT_MODE": "TRUE",
+  "EMPTY_CELL": "0",
+  "GRID_DIM": "9x9",
+  "CELL_MAP": {
+    "R[1-9]C[1-9]": "SCAN_ORDER_TOP_TO_BOTTOM_LEFT_TO_RIGHT"
+  }
+}
+
+### 1. GEOMETRIC_ANCHORING
+FOR EACH (cell IN grid) {
+  X_AXIS = DEFINE_NINE_COLUMN_SLOTS(GRID_WIDTH / 9);
+  Y_AXIS = DEFINE_NINE_ROW_SLOTS(GRID_HEIGHT / 9);
+  LOCK_COORDINATE(cell.R, cell.C);
+}
+
+### 2. COORDINATE_DRIVEN_OCR (R-C MAPPING)
+DO NOT EXTRACT BY VISUAL FLOW. EXTRACT BY SLOT ADDRESS:
+R1C1,R1C2,R1C3 | R1C4,R1C5,R1C6 | R1C7,R1C8,R1C9
+R2C1,R2C2,R2C3 | R2C4,R2C5,R2C6 | R2C7,R2C8,R2C9
+...
+R9C1,R9C2,R9C3 | R9C4,R9C5,R9C6 | R9C7,R9C8,R9C9
+
+[CRITICAL_LOGIC]: IF (Slot(RnCn) == NULL || BACKGROUND_ONLY) RETURN "0".
+[COLOR_BYPASS]: IGNORE HEX(#3b5998), IGNORE HEX(#ffffff20).
+
+### 3. BLOCK_INTEGRITY_LOOP
+VERIFY_BLOCK(B1-B9) {
+  DATA_STRUCTURE: 3x3_ARRAY;
+  VALIDATE: SUM_CHECK_NOT_REQUIRED;
+  VALIDATE: UNIQUENESS_CHECK_PER_ROW_COL_BLOCK;
+}
+
+### 4. OUTPUT_FORMAT
+- BLOCK_DUMP: Display 3x3 blocks with explicit R/C coordinates for manual audit.
+- FINAL_STREAM: 81-character continuous string [0-9].
+
+### 5. ERROR_RECOVERY_PROTOCOL
+IF (DUPLICATE_FOUND_IN_ROW_OR_COL) {
+  RE_SCAN(CONFLICT_COORDINATES);
+  VERIFY_ALIGNMENT(NEIGHBOR_SLOTS);
+}
+
+[EXECUTE_NOW]
+',
 
     MODEL: "gemini-3.1-flash-lite",
 
