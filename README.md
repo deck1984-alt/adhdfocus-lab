@@ -36,6 +36,21 @@ The goal is simple: scan, paste, or upload a puzzle and start playing right away
 4. Start the challenge.
 5. Solve the puzzle in the browser.
 
+## API key and advanced pages
+
+This project includes optional API-powered flows for advanced users.
+
+- `soduko-identify.html` handles puzzle digitization from images.
+- `qr-generator.html` generates shareable links and QR codes from puzzle data.
+- `index.html` currently routes to the image import page, while the QR generator page can be opened directly.
+
+Users who enable these features may need to provide their own API key for local use.
+
+## Support files
+
+- `identify-prompt.js` stores the prompt used for the image import / OCR flow.
+- `api-key.js` stores local or personal API settings for optional API-powered features.
+
 ## About me
 
 I'm a returning developer building practical open-source tools with simple, low-friction workflows.
