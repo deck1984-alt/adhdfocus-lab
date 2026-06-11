@@ -17,7 +17,7 @@ It supports:
 
 I wanted a Sudoku tool that works instantly in the browser, without forcing people to install an app or go through extra steps.
 
-The goal is simple: scan, paste, or upload a puzzle and start playing right away.
+The goal is simple: paste, import, or upload a puzzle and start playing right away.
 
 ## Features
 
@@ -50,6 +50,12 @@ Users who enable these features may need to provide their own API key for local 
 
 - `identify-prompt.js` stores the prompt used for the image import / OCR flow.
 - `api-key.js` stores local or personal API settings for optional API-powered features.
+
+## Important
+
+I once exposed an API key in the repository, so this reminder is here to prevent that from happening again. 
+
+Gemini told me to add `api-key.js` to `.gitignore`.
 
 ## About me
 
