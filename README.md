@@ -30,8 +30,8 @@ The goal is simple: paste, import, or upload a puzzle and start playing right aw
 
 ## How to use
 
-1. Open `index.html`.
-2. Paste a puzzle string or a JSON array.
+1. Open the puzzle through a QR code or a shareable link if you already have puzzle data.
+2. Or open `index.html` and paste a puzzle string or a JSON array manually.
 3. Use the image import page for puzzle digitization when needed.
 4. Start the challenge.
 5. You will be redirected to `soduko.html` to solve the puzzle in the browser.
