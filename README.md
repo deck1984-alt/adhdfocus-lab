@@ -34,7 +34,7 @@ The goal is simple: scan, paste, or upload a puzzle and start playing right away
 2. Paste a puzzle string or a JSON array.
 3. Use the image import page for puzzle digitization when needed.
 4. Start the challenge.
-5. Solve the puzzle in the browser.
+5. You will be redirected to `soduko.html` to solve the puzzle in the browser.
 
 ## API key and advanced pages
 
