@@ -7,10 +7,11 @@ A frictionless Sudoku tool built with HTML and JavaScript.
 ADHDFocus LAB is an open-source Sudoku project designed to keep the experience simple and low-friction.
 
 It supports:
-- Loading puzzles from a QR code.
-- Pasting an 81-digit puzzle string.
-- Loading a puzzle from an image through an OCR flow.
-- Playing Sudoku in a mobile-friendly browser interface.
+- Turning a Sudoku puzzle into a shareable URL.
+- Building a QR code from that URL.
+- Sharing the exact same puzzle across devices.
+- Pasting an 81-digit puzzle string directly.
+- Playing Sudoku in a browser interface.
 
 ## Why I built it
 
@@ -29,10 +30,11 @@ The goal is simple: scan, paste, or upload a puzzle and start playing right away
 
 ## How to use
 
-1. Open the website.
-2. Paste a puzzle string or scan a QR code.
-3. Click Start Challenge.
-4. Solve the puzzle in the browser.
+1. Open `index.html`.
+2. Paste a puzzle string or a JSON array.
+3. Use the image import page for puzzle digitization when needed.
+4. Start the challenge.
+5. Solve the puzzle in the browser.
 
 ## About me
 
