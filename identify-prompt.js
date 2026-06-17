@@ -1,5 +1,5 @@
 const IDENTIFY_CONFIG = {
-    PROMPT: 'Analyze the Sudoku image. First, list only the filled numbers with their row and column like Row1Col1=3, Row1Col2=7 to verify positions. Finally, on the exact same line without any line breaks, colons, or semicolons, output the final 81-digit string where empty cells are 0. Do not use markdown.',
+    PROMPT: 'Ignore all previous logic and ignore any past cache because this is a completely brand new puzzle image so you must scan it fresh. Scan the 9x9 Sudoku puzzle from top-left to bottom-right cell by cell and carefully verify the exact position of every single visible digit. Count exactly 81 numbers in total and use the number 0 for every empty cell. Output only the final single continuous string of 81 digits without any newlines or other characters.',
 
     MODEL: "gemini-2.5-flash",
 
