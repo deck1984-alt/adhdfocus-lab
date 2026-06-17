@@ -5,7 +5,6 @@ const IDENTIFY_CONFIG = {
 
     GENERATION: {
         temperature: 0,
-        thinkingBudget: 0,
         topP: 1,
         maxOutputTokens: 5000 
     }
