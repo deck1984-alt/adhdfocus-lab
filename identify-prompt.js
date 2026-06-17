@@ -1,5 +1,5 @@
 const IDENTIFY_CONFIG = {
-    PROMPT: 'Strictly analyze this 9x9 Sudoku image row by row. First find all 81 cells from top-left to bottom-right. If a cell is empty you must represent it as an X character. If a cell contains a number you must output that exact number. After mapping all 81 positions replace every X character with a 0 and output only the final single string of 81 numbers without any text explanation',
+    PROMPT: Analyze the Sudoku image. First, list only the filled numbers with their row and column like 'Row1Col1=3, Row1Col2=7' to verify positions. Finally, on the exact same line without any line breaks, colons, or semicolons, output the final 81-digit string where empty cells are 0. Do not use markdown.',
 
     MODEL: "gemini-2.5-flash",
 
