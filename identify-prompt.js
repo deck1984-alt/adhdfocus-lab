@@ -1,5 +1,5 @@
 const IDENTIFY_CONFIG = {
-    PROMPT: 'Ignore all previous logic and ignore any past cache because this is a completely brand new puzzle image so you must scan it fresh. Scan the 9x9 Sudoku puzzle from top-left to bottom-right cell by cell and carefully verify the exact position of every single visible digit. Count exactly 81 numbers in total and use the number 0 for every empty cell. Output only the final single continuous string of 81 digits without any newlines or other characters.',
+    PROMPT: '9x9 Sudoku OCR. Output EXACTLY 9 lines. Row 1 starts with "A", Row 2 starts with "B", up to Row 9 starting with "I". Each letter must be followed by exactly 9 numbers (0 for empty). End with newline. Example: A789123456\\nB300040008\\n... No wrapper, no text. If see blue block, it just like a normal block. Check again before output, if the result does not match the original image, calculate it again.',
 
     MODEL: "gemini-2.5-flash",
 
