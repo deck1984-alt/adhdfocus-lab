@@ -1,10 +1,11 @@
 const IDENTIFY_CONFIG = {
-    PROMPT: 'You are given an image of a Sudoku puzzle.Task: Extract the puzzle as an 81-digit string in row-major order.- Read each row from left to right, top to bottom.- Return digits 1-9 for filled cells.- Return 0 for blank cells.- Output only the final 81-digit string.- Do not add markdown, labels, spaces, or commentary.- Do not solve the Sudoku; only transcribe the grid.',
+    PROMPT: 'Locate the Sudoku board in the image and return JSON with one key grid containing exactly 81 digits in row major order, use 0 for empty cells, read each cell individually, do not solve, do not guess, do not merge or split digits, do not add any extra text',
 
     MODEL: "gemini-2.5-flash",
 
     GENERATION: {
         temperature: 0,
+        thinkingBudget: 0,
         topP: 1,
         maxOutputTokens: 5000 
     }
