@@ -1,11 +1,14 @@
 const IDENTIFY_CONFIG = {
-    PROMPT: "Focus only on the 9x9 Sudoku grid area in the image
-Do not read any numbers outside the grid such as system time or battery percentage or title text
+    PROMPT: 
+'You are given an image of a Sudoku puzzle.
 
-First write down the result as a 9x9 matrix using 0 for empty cells to ensure alignment
-Then output the final answer as a single string of 81 digits only
-
-Double check that your final string has exactly 81 characters",
+Task: Extract the puzzle as an 81-digit string in row-major order.
+- Read each row from left to right, top to bottom.
+- Return digits 1-9 for filled cells.
+- Return 0 for blank cells.
+- Output only the final 81-digit string.
+- Do not add markdown, labels, spaces, or commentary.
+- Do not solve the Sudoku; only transcribe the grid.',
 
     MODEL: "gemini-2.5-flash",
 
