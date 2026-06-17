@@ -1,5 +1,5 @@
 const IDENTIFY_CONFIG = {
-    PROMPT: 'Convert this Sudoku image into a single string of 81 numbers. Use 0 for empty squares, from top-left to bottom-right.',
+    PROMPT: 'Transcribe this 9x9 Sudoku puzzle row by row, from top to bottom. For each row, write out the 9 numbers from left to right, using 0 for empty cells. Double-check your grid alignment to ensure every number is in its exact correct position.',
 
     MODEL: "gemini-2.5-flash",
 
