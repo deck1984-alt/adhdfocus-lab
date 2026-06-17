@@ -8,7 +8,8 @@ Task: Extract the puzzle as an 81-digit string in row-major order.
 - Return 0 for blank cells.
 - Output only the final 81-digit string.
 - Do not add markdown, labels, spaces, or commentary.
-- Do not solve the Sudoku; only transcribe the grid.',
+- Do not solve the Sudoku; only transcribe the grid.'
+,
 
     MODEL: "gemini-2.5-flash",
 
