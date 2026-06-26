@@ -1,49 +1,207 @@
 <!DOCTYPE html>
-<html>
+<html lang="zh-TW">
 <head>
-    <title>台北天氣儀表板</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QR-CODE產生器 v1.30</title>
+    <script src="https://unpkg.com/qr-code-styling@1.5.0/lib/qr-code-styling.js"></script>
     <style>
-        body { text-align: center; font-family: "Microsoft JhengHei", sans-serif; background: #f0f8ff; padding-top: 50px; }
-        .card { background: white; padding: 30px; border-radius: 20px; display: inline-block; box-shadow: 0 10px 20px rgba(0,0,0,0.1); }
-        h1 { color: #333; }
-        .temp { font-size: 48px; color: #ff8c00; font-weight: bold; }
-        .info { font-size: 18px; color: #666; margin: 10px 0; }
-        button { padding: 10px 20px; border: none; background: #007bff; color: white; border-radius: 5px; cursor: pointer; }
+        :root { 
+            --bg-color: #f7f0e4;        
+            --accent-color: #c4dc9c;    
+            --text-dark: #402e20;       
+            --error-color: #cf6679;     
+            --info-color: #607d8b;      
+        }
+        body { 
+            font-family: sans-serif; 
+            background: var(--bg-color); 
+            color: var(--text-dark); 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            justify-content: center; 
+            min-height: 100vh; 
+            margin: 0; 
+            padding: 20px; 
+        }
+        .container { 
+            max-width: 400px; 
+            width: 100%; 
+            text-align: center; 
+            border: 2px solid #dfd3c3; 
+            padding: 2rem; 
+            border-radius: 12px; 
+            background: #fffdf9; 
+            box-shadow: 0 10px 30px rgba(0,0,0,0.05); 
+        }
+        input, textarea, button { 
+            width: 100%; 
+            margin: 10px 0; 
+            padding: 12px; 
+            border-radius: 12px; 
+            border: 2px solid #dfd3c3; 
+            box-sizing: border-box; 
+        }
+        textarea {
+            background: #ffffff;
+            color: var(--text-dark);
+            font-family: monospace;
+            resize: vertical;
+        }
+        textarea:focus {
+            border-color: var(--text-dark);
+            outline: none;
+        }
+        button { 
+            background: var(--accent-color); 
+            color: var(--text-dark); 
+            border: 2px solid #a9c57d; 
+            cursor: pointer; 
+            font-weight: bold; 
+            font-size: 16px; 
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            transition: 0.2s;
+        }
+        button:active { 
+            transform: scale(0.98); 
+            opacity: 0.9; 
+        }
+        button:disabled { 
+            opacity: 0.5; 
+        }
+        .btn-secondary {
+            background: #ffffff;
+            border: 2px solid #dfd3c3;
+            color: #7a6e65;
+            margin-top: 15px;
+        }
+        .btn-secondary:active {
+            background: #f7f0e4;
+        }
+        #status { 
+            margin-top: 15px; 
+            font-size: 14px; 
+            color: #7a6e65; 
+            min-height: 1.5em; 
+        }
+        .label-text { 
+            font-size: 12px; 
+            color: #8c7e73; 
+            margin-bottom: 5px; 
+            display: block; 
+            text-align: left; 
+        }
+        .qr-result-box {
+            margin-top: 20px;
+            background: #000000;
+            padding: 20px;
+            border-radius: 20px;
+            display: inline-block;
+            position: relative;
+        }
+        .qr-text-header {
+            color: #ffffff;
+            font-size: 20px;
+            font-weight: bold;
+            font-family: 'Impact', 'Arial Black', sans-serif;
+            margin-bottom: 5px;
+            letter-spacing: 2px;
+            position: relative;
+            z-index: 10;
+        }
+        .qr-text-footer {
+            color: #ffffff;
+            font-size: 16px;
+            font-weight: bold;
+            font-family: 'Impact', 'Arial Black', sans-serif;
+            margin-top: 5px;
+            letter-spacing: 2px;
+            position: relative;
+            z-index: 10;
+        }
+        .btn-download {
+            background: #607d8b;
+            color: #ffffff;
+            border: 2px solid #455a64;
+            margin-top: 15px;
+        }
+        .btn-download:active {
+            background: #455a64;
+        }
     </style>
 </head>
 <body>
 
-    <div class="card">
-        <h1>台北市即時天氣</h1>
-        <div id="weather">載入中...</div>
-        <button onclick="getWeather()">更新天氣</button>
-    </div>
+<div class="container">
+    <h2>QR-CODE產生器 1.30</h2>
+    
+    <span class="label-text">1. 輸入數獨題目（純 81 碼數字或 JSON）：</span>
+    <textarea id="sudokuInput" rows="4" placeholder="例如：0030206... 或帶有字串的 JSON"></textarea>
 
-    <script>
-        function getWeather() {
-            // 台北的經緯度：25.03, 121.56
-            const url = 'https://api.open-meteo.com/v1/forecast?latitude=25.03&longitude=121.56&current_weather=true';
+    <span class="label-text">2. 自訂 QR Code 中央貓咪圖片（選填）：</span>
+    <input type="file" id="logoInput" accept="image/*">
+    
+    <button id="generateBtn">產生 QR Code</button>
+    
+    <div id="status">準備就緒</div>
 
-            fetch(url)
-                .then(response => response.json())
-                .then(data => {
-                    const temp = data.current_weather.temperature;
-                    const wind = data.current_weather.windspeed;
-                    const time = data.current_weather.time;
+    <hr style="border: 0; border-top: 2px solid #dfd3c3; margin: 20px 0;">
+    <button class="btn-secondary" onclick="window.location.href='index.html'">回首頁</button>
+</div>
 
-                    document.getElementById('weather').innerHTML = `
-                        <div class="temp">${temp}°C</div>
-                        <div class="info">風速：${wind} km/h</div>
-                        <div class="info">觀測時間：${time}</div>
-                    `;
-                })
-                .catch(error => {
-                    document.getElementById('weather').innerText = '讀取失敗';
-                    console.error(error);
-                });
+<script>
+    let customLogoUrl = "https://i.imgur.com/xO796rD.png"; // 預設貓咪圖片
+
+    // 監聽貓咪圖片上傳
+    document.getElementById('logoInput').onchange = function(e) {
+        const file = e.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(event) {
+                customLogoUrl = event.target.result;
+            };
+            reader.readAsDataURL(file);
+        }
+    };
+
+    document.getElementById('generateBtn').onclick = function() {
+        const sudokuInput = document.getElementById('sudokuInput').value.trim();
+        const status = document.getElementById('status');
+        
+        if (!sudokuInput) {
+            alert('請輸入數獨數據');
+            return;
         }
 
-        getWeather(); // 網頁開啟時先跑一次
-    </script>
-</body>
-</html>
+        let puzzleResult = "";
+
+        // 判斷是否為 JSON 格式，如果是，試圖解析並提取數字
+        try {
+            const parsed = JSON.parse(sudokuInput);
+            // 假設 JSON 內可能有 puzzle 欄位，或者直接將整個物件轉字串過濾
+            const jsonStr = typeof parsed === 'object' ? JSON.stringify(parsed) : sudokuInput;
+            puzzleResult = jsonStr.replace(/[^0-9]/g, '');
+        } catch (e) {
+            // 不是 JSON，直接當作純文字並過濾非數字字元
+            puzzleResult = sudokuInput.replace(/[^0-9]/g, '');
+        }
+
+        // 驗證是否剛好 81 碼
+        if (puzzleResult.length !== 81) {
+            status.innerText = `錯誤：偵測到 ${puzzleResult.length} 碼數字。數獨必須剛好為 81 碼。`;
+            status.style.color = "var(--error-color)";
+            return;
+        }
+
+        status.innerText = "正在繪製 QR Code...";
+        status.style.color = "var(--text-dark)";
+
+        // 1. 建立目標網址
+        const targetUrl = `https://deck1984-alt.github.io/adhdfocus-lab/index.html?puzzle=${puzzleResult}`;
+
+        // 2. 建立 QR Code 容器與下載按鈕
+        status.innerHTML = `
+            <p style="color: #4caf50; font-weight: bold; margin-bottom: 5px;">QR Code 生成成功！</p>
+            <div class="qr-result-box" id="fullQrCard">
+                <div class
